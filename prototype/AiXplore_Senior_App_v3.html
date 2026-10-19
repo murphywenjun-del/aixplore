@@ -717,20 +717,19 @@ function openChat() {
   $('chat-overlay').classList.add('show');
   const msgs = $('chat-msgs');
   msgs.innerHTML = '';
-  // Auto-play all messages with 800ms stagger
-  chatMessages.forEach((m, i) => {
-    setTimeout(() => {
-      const div = document.createElement('div');
-      div.className = `chat-msg ${m.from}`;
-      let html = m.text;
-      if (m.source) html += `<div class="cm-source">${m.source}</div>`;
-      if (m.disclaimer) html += `<div class="cm-disclaimer">⚠️ ${m.disclaimer}</div>`;
-      html += `<div class="cm-time">${m.time}</div>`;
-      div.innerHTML = html;
-      msgs.appendChild(div);
-      msgs.scrollTop = 99999;
-    }, i * 800);
+  // Show all messages at once for easy reading
+  chatMessages.forEach((m) => {
+    const div = document.createElement('div');
+    div.className = `chat-msg ${m.from}`;
+    let html = m.text;
+    if (m.source) html += `<div class="cm-source">${m.source}</div>`;
+    if (m.disclaimer) html += `<div class="cm-disclaimer">⚠️ ${m.disclaimer}</div>`;
+    html += `<div class="cm-time">${m.time}</div>`;
+    div.innerHTML = html;
+    msgs.appendChild(div);
   });
+  // Scroll to top — read conversation top-to-bottom
+  msgs.scrollTop = 0;
 }
 function sendChat() {
   const inp = $('chat-input');
