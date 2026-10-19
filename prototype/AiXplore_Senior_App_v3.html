@@ -267,7 +267,18 @@ body {
 .tab .t-label { font-size: 10px; font-weight: 600; color: var(--text-3); }
 .tab.active .t-label { color: var(--accent); }
 
-/* ZOOM PANEL */
+/* TAP RING ANIMATION */
+.tap-ring {
+  position: absolute; width: 36px; height: 36px;
+  border-radius: 50%; border: 3px solid var(--teal);
+  background: rgba(46,139,114,.15); z-index: 80;
+  animation: tapAnim 1s ease-out forwards; pointer-events: none;
+}
+@keyframes tapAnim {
+  0% { transform: scale(0.5); opacity: 1; }
+  50% { transform: scale(1.3); opacity: .7; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
 .zoom-panel { position: fixed; top: 20px; right: 20px; z-index: 400; display: flex; flex-direction: column; gap: 4px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 6px; box-shadow: var(--shadow-md); }
 .zoom-btn { width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; cursor: pointer; border: none; background: var(--border-2); color: var(--text); transition: all .15s; }
 .zoom-btn:hover { background: var(--accent); color: #fff; }
@@ -744,6 +755,27 @@ function closeChat() { $('chat-overlay').classList.remove('show'); }
 
 // AUTO-PLAY DEMO
 let demoTimer = null; let demoStep = 0;
+function showTap(el) {
+  const phone = $('phone');
+  if (!el || !phone) return;
+  const phoneRect = phone.getBoundingClientRect();
+  const elRect = el.getBoundingClientRect();
+  const x = elRect.left - phoneRect.left + elRect.width / 2 - 18;
+  const y = elRect.top - phoneRect.top + elRect.height / 2 - 18;
+  const ring = document.createElement('div');
+  ring.className = 'tap-ring';
+  ring.style.left = x + 'px';
+  ring.style.top = y + 'px';
+  // Add to phone (position relative)
+  phone.querySelector('.p-content').appendChild(ring);
+  setTimeout(() => ring.remove(), 1000);
+}
+function scrollContent(target) {
+  const c = document.querySelector('.p-content');
+  if (target === 'top') { c.scrollTo({top: 0, behavior: 'smooth'}); }
+  else if (target === 'bottom') { c.scrollTo({top: c.scrollHeight, behavior: 'smooth'}); }
+  else if (target === 'mid') { c.scrollTo({top: c.scrollHeight / 3, behavior: 'smooth'}); }
+}
 function toggleDemo() {
   if (demoTimer) { stopDemo(); return; }
   startDemo();
@@ -763,12 +795,28 @@ function stopDemo() {
 }
 function runDemoStep() {
   const steps = [
-    { label: '① Discover', fn: () => { goDiscover(); $('card-1').style.outline = '3px solid var(--teal)'; } },
-    { label: '② Open Card #1', fn: () => { $('card-1').style.outline = ''; goDetail('calligraphy'); } },
-    { label: '③ Confirm Going', fn: () => { confirmGo(); } },
-    { label: '④ Return → Liked', fn: () => { /* return sheet auto-opens from confirmGo */ setTimeout(() => retResult('liked'), 800); } },
-    { label: '⑤ Pulong Chat', fn: () => { closeReturn(); openChat(); } },
-    { label: '⑥ My Weeks (log)', fn: () => { closeChat(); goWeeks(); } },
+    { label: '① Discover', fn: () => {
+        goDiscover(); scrollContent('top');
+        setTimeout(() => { $('card-1').style.outline = '3px solid var(--teal)'; showTap($('card-1')); }, 400);
+      } },
+    { label: '② Open Card #1', fn: () => {
+        $('card-1').style.outline = '';
+        goDetail('calligraphy'); scrollContent('top');
+        setTimeout(() => showTap($('det-title')), 400);
+      } },
+    { label: '③ Confirm Going', fn: () {
+        scrollContent('bottom');
+        setTimeout(() => { showTap($('btn-going')); confirmGo(); }, 500);
+      } },
+    { label: '④ Return → Liked', fn: () => {
+        setTimeout(() => { showTap(document.querySelector('.ret-opt.liked')); retResult('liked'); }, 1000);
+      } },
+    { label: '⑤ Pulong Chat', fn: () => {
+        closeReturn(); openChat();
+      } },
+    { label: '⑥ My Weeks (log)', fn: () => {
+        closeChat(); goWeeks(); scrollContent('top');
+      } },
     { label: '✓ Done', fn: () => { stopDemo(); } }
   ];
   if (demoStep >= steps.length) { stopDemo(); return; }
@@ -776,7 +824,7 @@ function runDemoStep() {
   $('demo-status').textContent = s.label;
   s.fn();
   demoStep++;
-  const delays = [3000, 3000, 4000, 4500, 5500, 3000, 0];
+  const delays = [3000, 3500, 4000, 4500, 5500, 3000, 0];
   demoTimer = setTimeout(runDemoStep, delays[demoStep] || 3000);
 }
 
