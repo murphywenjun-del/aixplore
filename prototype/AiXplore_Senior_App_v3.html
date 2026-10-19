@@ -786,10 +786,10 @@ function showScr(id) {
 }
 function goOnboard() { showScr('scr-onboard'); setTab(0); }
 function goDiscover() { showScr('scr-discover'); setTab(1); }
-function goDetail(key) { showScr('scr-detail'); setTab(1); fillDetail(key); }
 function goReturn() { showScr('scr-return'); setTab(2); $('ret-ask').style.display='block'; $('ret-result').style.display='none'; }
 function goMy() { showScr('scr-my'); setTab(3); }
 function goDetail(key) {
+  showScr('scr-detail'); setTab(1);
   const data = {
     calligraphy: {
       tag: 'New this week', tagBg: 'var(--teal-light)', tagC: 'var(--teal)',
