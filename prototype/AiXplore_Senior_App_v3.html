@@ -367,6 +367,15 @@ body {
         <div class="disc-hdr"><h2>This week for you, Mei</h2><p>3 picked from 22 activities near Finch. Ranked by your interests + what's new.</p></div>
         <div class="why-box"><div class="wb-title">Why these 3?</div>You like calligraphy and walking. These are within 4 stops of Finch, under $10, on days you're free. #1 is new. #2 is a repeat (you liked it). #3 is something different.</div>
 
+        <!-- PULONG WEEKLY SUMMARY BANNER -->
+        <div style="background:var(--teal-light);border-radius:12px;padding:12px 14px;margin-bottom:14px;border:1px solid rgba(46,139,114,.15)">
+          <div style="font-size:11px;font-weight:800;color:var(--teal);margin-bottom:4px">🤖 Pulong this week</div>
+          <div style="font-size:12px;color:var(--text-2);line-height:1.6">
+            3 activities near you · 2 new types · closest: 4 stops.<br>
+            <strong>You tried 2 different activities last month.</strong> This week I kept one familiar + one new.
+          </div>
+        </div>
+
         <div class="sugg-card rank1" id="card-1" onclick="goDetail('calligraphy')">
           <div class="sugg-rank">#1 · Best match</div>
           <div class="sugg-tag">New this week</div>
@@ -426,7 +435,9 @@ body {
           <div class="det-meta" id="det-meta">Wednesday 14:00–16:00<br>North York Chinese Community Centre<br>20 Fincastle Ave, North York<br><span style="color:var(--teal)">TTC: Finch Stn → Don Valley Dr (2 stops)</span></div>
           <div class="det-section"><div class="ds-title">WHAT TO EXPECT</div><span id="det-expect">Instructor guides you. 30 min practice + 30 min free writing. Materials provided. About 8–12 people. People come alone. Quiet and relaxing.</span></div>
           <div class="det-ai"><div class="da-title">🤖 Pulong, in your language</div><span id="det-ai-text">你只需要人到就行。笔和墨他们都帮你准备好了。一共大概 8-12 个人，都是来练习的，不用表演。挺安静的。带个小本子可以回家继续练。</span><br><em style="font-size:10px;color:var(--text-3);display:block;margin-top:6px">If Pulong doesn't know: "I'll check with the organizer."</em></div>
-          <div class="det-social" id="det-social"><span>👥</span> 2 others from AiXplore are going (opted in)</div>
+          <div class="det-social" id="det-social"><span>👥</span> 2 others from AiXplore are going (opted in)<br>
+            <span style="font-size:10px;color:var(--text-3);margin-top:4px;display:block">👥 Attending: 🇨🇳 12 · 🇵🇭 5 · 🇮🇳 3 · others 4 · "People come alone: Yes"</span>
+          </div>
 
           <!-- WAYFINDING PHOTO -->
           <div style="margin-top:14px">
@@ -535,12 +546,48 @@ body {
           <div class="my-name">Mei (李梅)</div>
           <div class="my-sub">68 · North York · Finch Station area</div>
         </div>
+
+        <!-- YOUR JOURNEY PROGRESS -->
+        <div style="background:var(--teal-light);border-radius:12px;padding:14px;margin-bottom:16px;border:1px solid rgba(46,139,114,.15)">
+          <div style="font-size:12px;font-weight:800;color:var(--teal);margin-bottom:8px">📈 Your Journey</div>
+          <div style="display:flex;gap:4px;margin-bottom:8px">
+            <div style="flex:1;text-align:center;padding:6px 0;border-radius:6px;background:var(--card);border:1px solid var(--teal);font-size:9px;font-weight:700;color:var(--teal)">✓ Wk 1</div>
+            <div style="flex:1;text-align:center;padding:6px 0;border-radius:6px;background:var(--card);border:1px solid var(--teal);font-size:9px;font-weight:700;color:var(--teal)">✓ Wk 2</div>
+            <div style="flex:1;text-align:center;padding:6px 0;border-radius:6px;background:var(--teal);color:#fff;font-size:9px;font-weight:700">● Wk 3</div>
+            <div style="flex:1;text-align:center;padding:6px 0;border-radius:6px;background:var(--border-2);font-size:9px;color:var(--text-3)">Wk 4+</div>
+          </div>
+          <div style="font-size:10px;color:var(--text-2);line-height:1.6">
+            3 weeks in: attended 3 different types. Returning 2× to walking.<br>
+            <strong>Next milestone:</strong> 3rd return visit to same activity (Calligraphy Wk 4).
+          </div>
+        </div>
+
         <div class="my-section-title">This month</div>
         <div class="my-stat-row">
           <div class="my-stat"><div class="n">3</div><div class="l">attended</div></div>
           <div class="my-stat hl"><div class="n">2</div><div class="l">returned 2×</div></div>
           <div class="my-stat"><div class="n">1</div><div class="l">new type</div></div>
         </div>
+
+        <!-- PULONG KNOWS TRUST CARD -->
+        <div class="my-section-title">🤖 What Pulong knows</div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:16px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px;line-height:1.6">
+            <div style="padding:8px;border-radius:8px;background:var(--teal-light)">
+              <div style="font-weight:700;color:var(--teal);font-size:10px;margin-bottom:3px">✓ Knows</div>
+              Area, language, interests, days, budget, mobility
+            </div>
+            <div style="padding:8px;border-radius:8px;background:#ffe5e5">
+              <div style="font-weight:700;color:#d63031;font-size:10px;margin-bottom:3px">✗ Does NOT</div>
+              ID, bank, medical, location tracking, contacts
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--text-3);margin-top:8px;line-height:1.5">
+            "I am a program, not a person." — shown in every conversation.<br>
+            Facts come only from verified organizer feeds. Pulong cannot invent events.
+          </div>
+        </div>
+
         <div class="my-section-title">Your profile (set by daughter · read-only)</div>
         <div class="my-info-list">
           <div class="my-info-item"><span class="k">Language</span><span class="v">Mandarin (中文)</span></div>
@@ -651,6 +698,46 @@ body {
   <div style="width:100%;height:1px;background:var(--border);margin:4px 0"></div>
   <button class="zoom-btn demo-btn" id="demo-btn" onclick="toggleDemo()" title="Auto-play demo">▶</button>
   <div class="demo-status" id="demo-status" style="writing-mode:vertical-rl;text-orientation:mixed;font-size:10px;max-height:80px;overflow:hidden">Auto-play</div>
+</div>
+
+<!-- IMPACT SUMMARY OVERLAY (demo ending) -->
+<div class="ret-overlay" id="impact-overlay" style="z-index:120">
+  <div class="ret-sheet" style="max-height:90%">
+    <div class="rs-handle"></div>
+    <div style="text-align:center;margin-bottom:14px">
+      <div style="font-size:32px">📊</div>
+      <div style="font-size:16px;font-weight:800">This Week's Impact</div>
+      <div style="font-size:11px;color:var(--text-3)">From the loop you just watched</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div style="background:var(--teal-light);border-radius:10px;padding:12px;text-align:center">
+        <div style="font-size:24px;font-weight:800;color:var(--teal)">+1</div>
+        <div style="font-size:10px;color:var(--text-2)">new activity<br>(Music & Tea)</div>
+      </div>
+      <div style="background:var(--purple-light);border-radius:10px;padding:12px;text-align:center">
+        <div style="font-size:24px;font-weight:800;color:var(--purple)">+1</div>
+        <div style="font-size:10px;color:var(--text-2)">cross-cultural moment<br>(Josefina)</div>
+      </div>
+      <div style="background:var(--amber-light);border-radius:10px;padding:12px;text-align:center">
+        <div style="font-size:24px;font-weight:800;color:var(--amber)">3</div>
+        <div style="font-size:10px;color:var(--text-2)">activities w/ 2+ visits<br>(returning)</div>
+      </div>
+      <div style="background:var(--card);border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border)">
+        <div style="font-size:24px;font-weight:800">Wk 3</div>
+        <div style="font-size:10px;color:var(--text-2)">going alone →<br>comfortable alone</div>
+      </div>
+    </div>
+    <div style="font-size:12px;font-weight:700;text-align:center;margin-bottom:8px">"From 0 → 3 different communities in 4 weeks."</div>
+    <div style="font-size:10px;color:var(--text-3);text-align:center;line-height:1.6">
+      North star metric: participations/user/month<br>
+      <strong>0 → 3 activities · 2 returning · 1 cross-cultural bridge</strong>
+    </div>
+    <div style="text-align:center;margin-top:14px">
+      <div style="display:inline-block;padding:12px 24px;border-radius:10px;background:var(--teal);color:#fff;font-size:13px;font-weight:700;cursor:pointer" onclick="document.getElementById('impact-overlay').classList.remove('show')">
+        ✓ Replay or Explore Manually
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -912,7 +999,7 @@ function runDemoStep() {
       } },
     { label: '✓ Loop Complete', fn: () => {
         stopDemo();
-        showToast('Full loop ✓\nDiscover → Detail → Going → Return → Bridge Moment → Pulong next-week → Log updated\n\nPress ▶ to replay, or H to hide notes.');
+        $('impact-overlay').classList.add('show');
       } }
   ];
   if (demoStep >= steps.length) { stopDemo(); return; }
