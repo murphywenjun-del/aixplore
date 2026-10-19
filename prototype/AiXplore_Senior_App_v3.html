@@ -64,7 +64,7 @@ body {
 .org-badge { font-size: 9px; font-weight: 700; color: var(--teal); background: var(--teal-light); padding: 3px 7px; border-radius: 5px; }
 .lang-pill { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 5px; background: var(--border-2); border: 1px solid var(--border); cursor: pointer; color: var(--text-2); }
 
-.p-content { flex:1; overflow-y:auto; padding:4px 16px 90px; position: relative; }
+.p-content { flex:1; overflow-y:auto; padding:4px 16px 90px; position: relative; scroll-behavior: smooth; }
 .scr { display:none; }
 .scr.active { display:block; }
 
@@ -772,9 +772,12 @@ function showTap(el) {
 }
 function scrollContent(target) {
   const c = document.querySelector('.p-content');
-  if (target === 'top') { c.scrollTo({top: 0, behavior: 'smooth'}); }
-  else if (target === 'bottom') { c.scrollTo({top: c.scrollHeight, behavior: 'smooth'}); }
-  else if (target === 'mid') { c.scrollTo({top: c.scrollHeight / 3, behavior: 'smooth'}); }
+  if (!c) return;
+  if (target === 'top') c.scrollTop = 0;
+  else if (target === 'bottom') c.scrollTop = c.scrollHeight;
+  else if (target === 'mid') c.scrollTop = c.scrollHeight * 0.4;
+  // Force reflow
+  c.offsetHeight;
 }
 function toggleDemo() {
   if (demoTimer) { stopDemo(); return; }
