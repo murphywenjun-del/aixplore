@@ -469,7 +469,7 @@ body {
 
       <!-- MY WEEKS -->
       <div class="scr" id="scr-weeks">
-        <div class="weeks-hdr"><h2>My Weeks</h2><p>Your activity log. Pulong uses this to pick better suggestions.</p></div>
+        <div class="weeks-hdr"><h2>My Weeks</h2><p>Your activity log + shared moments.</p></div>
 
         <div class="week-item">
           <div class="wi-icon">🌿</div>
@@ -500,16 +500,43 @@ body {
           <div class="wi-status scheduled">Scheduled</div>
         </div>
 
-        <div class="week-item">
-          <div class="wi-icon">🎵</div>
-          <div class="wi-body">
-            <div class="wi-title">Music & Tea (suggested)</div>
-            <div class="wi-meta">Next Tue · 15:00 · Yorkville Seniors Lounge</div>
-          </div>
-          <div class="wi-status skipped">New</div>
+        <!-- BRIDGE MOMENTS SECTION -->
+        <div style="margin-top:20px;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:800;color:var(--text)">🌉 Shared Moments</div>
+          <div style="font-size:11px;color:var(--text-3)">When you and someone from a different community made something together.</div>
         </div>
 
-        <div class="trust-line"><strong>By NYPL</strong> · Your daughter can stop this anytime</div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <div style="font-size:24px">🌿</div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:700">Garden Club · Last Wednesday</div>
+              <div style="font-size:11px;color:var(--text-3)">Mei 🇨🇳 + Josefina 🇵🇭 · made flowers together</div>
+            </div>
+            <div style="font-size:10px;background:var(--teal-light);color:var(--teal);padding:3px 7px;border-radius:4px;font-weight:700">Mutual ✓</div>
+          </div>
+          <div style="font-size:11px;line-height:1.7;color:var(--text-2);background:var(--border-2);border-radius:8px;padding:10px">
+            <strong>She said:</strong> "你的书法很美，谢谢教我。" (Thank you for teaching me your calligraphy.)<br>
+            <strong>You said:</strong> "Your weaving was beautiful. I'd love to learn." <span style="color:var(--text-3);font-size:10px">(sent in Tagalog: "Ang ganda ng pagsusunod mo.")</span><br>
+            <span style="color:var(--purple);font-size:10px">🤖 Pulong note: Palm weaving is a traditional Filipino craft, common in rural areas. Many seniors learned it young.</span>
+          </div>
+        </div>
+
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <div style="font-size:24px">🚶‍♀️</div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:700">Finch Walk · Last Friday</div>
+              <div style="font-size:11px;color:var(--text-3)">Mei 🇨🇳 + Ana 🇨🇳 · walked together</div>
+            </div>
+            <div style="font-size:10px;background:var(--amber-light);color:var(--amber);padding:3px 7px;border-radius:4px;font-weight:700">New</div>
+          </div>
+          <div style="font-size:11px;color:var(--text-2);line-height:1.6">
+            3rd week walking together. Pulong will ask if you'd like to suggest a coffee stop next time.
+          </div>
+        </div>
+
+        <div class="trust-line"><strong>By NYPL</strong> · Moments are opt-in. Neither person can see the other's activity history.</div>
       </div>
 
       <!-- MY -->
@@ -696,7 +723,23 @@ function buildReturnAsk() {
 }
 function retResult(type) {
   const map = {
-    liked: { t:'👍 Great! What next?', b:`<div class="rr-item"><div class="rr-dot teal"></div><div><strong>Next:</strong> Same time next Wednesday. Standing reminder: "Every Wed 7am — Calligraphy at 2pm."</div></div><div class="rr-item"><div class="rr-dot teal"></div><div><strong>Log:</strong> Liked Calligraphy. Return count: 2. Next weights "more like this."</div></div>` },
+    liked: { t:'👍 Great! What next?', b:`<div class="rr-item"><div class="rr-dot teal"></div><div><strong>Next:</strong> Same time next Wednesday. Standing reminder: "Every Wed 7am — Calligraphy at 2pm."</div></div><div class="rr-item"><div class="rr-dot teal"></div><div><strong>Log:</strong> Liked Calligraphy. Return count: 2. Next weights "more like this."</div></div>
+      <div style="margin-top:14px;background:var(--purple-light);border-radius:10px;padding:12px">
+        <div style="font-size:11px;font-weight:700;color:var(--purple);margin-bottom:6px">🌉 Bridge Moment</div>
+        <div style="font-size:12px;line-height:1.6;color:var(--text-2)">
+          Today at Calligraphy Circle, <strong>Josefina</strong> (🇵🇭 Filipino community) sat next to you and praised your brushwork.<br>
+          She said: <em>"Your characters were so calm and beautiful. Thank you."</em>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <div style="flex:1;padding:10px;border-radius:8px;background:var(--card);border:2px solid var(--teal);cursor:pointer;font-size:12px;font-weight:700;color:var(--teal);text-align:center" onclick="showToast('✓ Sent. Pulong translated your thanks into Tagalog for Josefina.\n"Ang ganda ng isulat mo, salamat!"\nBoth of you now have a shared moment.')">
+            Say "Thank you" →<br><span style="font-size:10px;font-weight:400;color:var(--text-3)">auto-translated to Tagalog</span>
+          </div>
+          <div style="padding:10px;border-radius:8px;background:var(--border-2);cursor:pointer;font-size:12px;font-weight:600;color:var(--text-3);text-align:center" onclick="showToast('OK, skipped. No pressure.')">
+            Skip
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--text-3);margin-top:8px">She'll see: "Mei 说：谢谢，你的编织也很美。" (in her language).<br>Opt-in. If she didn't also express appreciation, this stays private to you.</div>
+      </div>` },
     ok: { t:'👌 Not quite a favourite', b:`<div class="rr-item"><div class="rr-dot amber"></div><div><strong>Next:</strong> Pulong suggests something similar but different — maybe a shorter session or a different teacher.</div></div><div class="rr-item"><div class="rr-dot purple"></div><div><strong>Log:</strong> "OK" feedback. No profile change.</div></div>` },
     dissatisf: { t:'👎 What was it?', b:`<div class="rr-item"><div class="rr-dot amber"></div><div><strong>Too far?</strong> → Filter closer next time.</div></div><div class="rr-item"><div class="rr-dot amber"></div><div><strong>Language?</strong> → Look for groups in your language.</div></div><div class="rr-item"><div class="rr-dot amber"></div><div><strong>Felt alone?</strong> → Prioritise "people come alone: yes" + regulars.</div></div><div class="rr-item"><div class="rr-dot amber"></div><div><strong>Not interesting?</strong> → Try a different type.</div></div><div class="rr-item"><div class="rr-dot purple"></div><div><strong>Profile updated.</strong></div></div>` },
     no: { t:'😐 What got in the way?', b:`<div class="rr-item"><div class="rr-dot amber"></div><div><strong>Too early?</strong> → Suggest later start times.</div></div><div class="rr-item"><div class="rr-dot amber"></div><div><strong>Didn't feel ready?</strong> → Offer a buddy who goes regularly.</div></div><div class="rr-item"><div class="rr-dot amber"></div><div><strong>Weather?</strong> → Indoor alternatives.</div></div><div class="rr-item"><div class="rr-dot amber"></div><div><strong>Forgot?</strong> → Add earlier reminder.</div></div><div class="rr-item"><div class="rr-dot purple"></div><div><strong>No penalty. Try again next week.</strong></div></div>` }
