@@ -844,7 +844,6 @@ function stopDemo() {
   $('demo-status').textContent = 'Auto-plays the full loop';
 }
 function runDemoStep() {
-  const phone = document.querySelector('.phone');
   const steps = [
     { label: '① Discover', fn: () => {
         goDiscover();
@@ -855,49 +854,81 @@ function runDemoStep() {
           $('card-1').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 300);
       } },
-    { label: '② Open Card', fn: () => {
+    { label: '② Detail + Route', fn: () => {
         $('card-1').style.outline = '';
         goDetail('calligraphy');
         setTimeout(() => {
+          $('det-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
           showTap($('det-title'));
-          $('det-title').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 300);
-      } },
-    { label: '③ Going', fn: () => {
         setTimeout(() => {
-          showTap($('btn-going'));
-          $('btn-going').scrollIntoView({ behavior: 'smooth', block: 'center' });
-          confirmGo();
-        }, 500);
+          document.querySelector('.det-social').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 1500);
       } },
-    { label: '④ Return', fn: () => {
+    { label: '③ Confirm Going', fn: () => {
+        setTimeout(() => {
+          $('btn-going').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          showTap($('btn-going'));
+          confirmGo();
+        }, 400);
+      } },
+    { label: '④ Return → Liked', fn: () => {
+        setTimeout(() => {
+          $('ret-overlay').classList.add('show');
+        }, 800);
         setTimeout(() => {
           const opt = document.querySelector('.ret-opt.liked');
-          if (opt) { showTap(opt); opt.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-          retResult('liked');
-        }, 1200);
+          if (opt) { showTap(opt); retResult('liked'); }
+        }, 2000);
       } },
-    { label: '⑤ Pulong Chat', fn: () => {
+    { label: '⑤ 🌉 Bridge Moment', fn: () => {
+        // Scroll the return sheet to show the Bridge Moment section
+        setTimeout(() => {
+          const bridgeEl = document.querySelector('#ret-content .ret-result, #ret-sheet');
+          if (bridgeEl) {
+            const sheet = $('ret-sheet');
+            sheet.scrollTop = sheet.scrollHeight;
+          }
+          // Highlight the "Say Thank You" button
+          const thankBtn = document.querySelector('#ret-content [onclick*="translated"]');
+          if (thankBtn) {
+            thankBtn.style.outline = '3px solid var(--purple)';
+            showTap(thankBtn);
+          }
+        }, 600);
+      } },
+    { label: '⑥ Pulong: "Next week?"', fn: () => {
         closeReturn();
+        // Change Pulong chat to "next week" narrative
+        chatMessages[0] = { from: 'pulong', text: '你上周说喜欢书法也喜欢音乐。<br>下周有个 Music & Tea 活动，Tue 15:00，4 站路。<br>想不想试试？', time: 'Next Wed 9:00', source: 'Feed #19 · verified Oct 15', disclaimer: '我是程序，信息来自 verified feed。' };
+        chatMessages[1] = { from: 'user', text: '好的，帮我报名', time: 'Next Wed 9:01' };
+        chatMessages[2] = { from: 'pulong', text: '✓ 已记录。下周 Tue 下午我会提醒你。<br><br>你已经有 2 个固定活动了（书法 + 散步）。Music & Tea 是第 3 个不同的类型。', time: 'Next Wed 9:01', source: 'Log: 3 types tried · 2 returning' };
+        chatMessages[3] = { from: 'pulong', text: '哦对了 — Josefina 收到了你的感谢。\n她说: "Salamat po! Next time I\'ll bring a weaving demo for the class."\n\n你们现在有 2 个 shared moments 了。', time: 'Next Wed 9:02', source: 'Shared Moments: 2' };
         openChat();
       } },
-    { label: '⑥ My Weeks', fn: () => {
+    { label: '⑦ My Weeks ✓', fn: () => {
         closeChat();
         goWeeks();
         zoomLevel = 1.0; applyZoom();
         setTimeout(() => {
-          const first = document.querySelector('.week-item');
-          if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          document.querySelector('.week-item').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 300);
+        setTimeout(() => {
+          const sm = document.querySelector('#scr-weeks');
+          if (sm) sm.scrollTop = sm.scrollHeight * 0.5;
+        }, 1500);
       } },
-    { label: '✓ Done', fn: () => { stopDemo(); } }
+    { label: '✓ Loop Complete', fn: () => {
+        stopDemo();
+        showToast('Full loop ✓\nDiscover → Detail → Going → Return → Bridge Moment → Pulong next-week → Log updated\n\nPress ▶ to replay, or H to hide notes.');
+      } }
   ];
   if (demoStep >= steps.length) { stopDemo(); return; }
   const s = steps[demoStep];
   $('demo-status').textContent = s.label;
   s.fn();
   demoStep++;
-  const delays = [3000, 3500, 4000, 4500, 5500, 3000, 0];
+  const delays = [3000, 4000, 3500, 4000, 4500, 5500, 4000, 1000];
   demoTimer = setTimeout(runDemoStep, delays[demoStep] || 3000);
 }
 
