@@ -770,14 +770,16 @@ function showTap(el) {
   phone.querySelector('.p-content').appendChild(ring);
   setTimeout(() => ring.remove(), 1000);
 }
-function scrollContent(target) {
+function scrollContent(target, el) {
   const c = document.querySelector('.p-content');
   if (!c) return;
   if (target === 'top') c.scrollTop = 0;
   else if (target === 'bottom') c.scrollTop = c.scrollHeight;
   else if (target === 'mid') c.scrollTop = c.scrollHeight * 0.4;
-  // Force reflow
-  c.offsetHeight;
+  // If a specific element, scroll it into center view of the phone
+  if (el) {
+    setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+  }
 }
 function toggleDemo() {
   if (demoTimer) { stopDemo(); return; }
@@ -797,28 +799,51 @@ function stopDemo() {
   $('demo-status').textContent = 'Auto-plays the full loop';
 }
 function runDemoStep() {
+  const phone = document.querySelector('.phone');
   const steps = [
     { label: '① Discover', fn: () => {
-        goDiscover(); scrollContent('top');
-        setTimeout(() => { $('card-1').style.outline = '3px solid var(--teal)'; showTap($('card-1')); }, 400);
+        goDiscover();
+        zoomLevel = 1.3; applyZoom();
+        setTimeout(() => {
+          $('card-1').style.outline = '3px solid var(--teal)';
+          showTap($('card-1'));
+          $('card-1').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
       } },
-    { label: '② Open Card #1', fn: () => {
+    { label: '② Open Card', fn: () => {
         $('card-1').style.outline = '';
-        goDetail('calligraphy'); scrollContent('top');
-        setTimeout(() => showTap($('det-title')), 400);
+        goDetail('calligraphy');
+        setTimeout(() => {
+          showTap($('det-title'));
+          $('det-title').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
       } },
-    { label: '③ Confirm Going', fn: () => {
-        scrollContent('bottom');
-        setTimeout(() => { showTap($('btn-going')); confirmGo(); }, 500);
+    { label: '③ Going', fn: () => {
+        setTimeout(() => {
+          showTap($('btn-going'));
+          $('btn-going').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          confirmGo();
+        }, 500);
       } },
-    { label: '④ Return → Liked', fn: () => {
-        setTimeout(() => { showTap(document.querySelector('.ret-opt.liked')); retResult('liked'); }, 1000);
+    { label: '④ Return', fn: () => {
+        setTimeout(() => {
+          const opt = document.querySelector('.ret-opt.liked');
+          if (opt) { showTap(opt); opt.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+          retResult('liked');
+        }, 1200);
       } },
     { label: '⑤ Pulong Chat', fn: () => {
-        closeReturn(); openChat();
+        closeReturn();
+        openChat();
       } },
-    { label: '⑥ My Weeks (log)', fn: () => {
-        closeChat(); goWeeks(); scrollContent('top');
+    { label: '⑥ My Weeks', fn: () => {
+        closeChat();
+        goWeeks();
+        zoomLevel = 1.0; applyZoom();
+        setTimeout(() => {
+          const first = document.querySelector('.week-item');
+          if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
       } },
     { label: '✓ Done', fn: () => { stopDemo(); } }
   ];
