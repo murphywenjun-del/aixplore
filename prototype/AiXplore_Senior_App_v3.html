@@ -776,7 +776,8 @@ function runDemoStep() {
   $('demo-status').textContent = s.label;
   s.fn();
   demoStep++;
-  demoTimer = setTimeout(runDemoStep, demoStep === 4 ? 2500 : 2000);
+  const delays = [3000, 3000, 4000, 4500, 5500, 3000, 0];
+  demoTimer = setTimeout(runDemoStep, delays[demoStep] || 3000);
 }
 
 // ZOOM
