@@ -768,8 +768,8 @@ function runDemoStep() {
     { label: '② Open Card #1', fn: () => { $('card-1').style.outline = ''; goDetail('calligraphy'); } },
     { label: '③ Confirm Going', fn: () => { confirmGo(); } },
     { label: '④ Return → Liked', fn: () => { /* return sheet auto-opens from confirmGo */ setTimeout(() => retResult('liked'), 800); } },
-    { label: '⑤ Pulong Chat', fn: () { closeReturn(); openChat(); } },
-    { label: '⑥ My Weeks (log)', fn: () { closeChat(); goWeeks(); } },
+    { label: '⑤ Pulong Chat', fn: () => { closeReturn(); openChat(); } },
+    { label: '⑥ My Weeks (log)', fn: () => { closeChat(); goWeeks(); } },
     { label: '✓ Done', fn: () => { stopDemo(); } }
   ];
   if (demoStep >= steps.length) { stopDemo(); return; }
