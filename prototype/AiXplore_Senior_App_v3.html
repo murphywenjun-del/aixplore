@@ -700,41 +700,6 @@ body {
   <div class="demo-status" id="demo-status" style="writing-mode:vertical-rl;text-orientation:mixed;font-size:10px;max-height:80px;overflow:hidden">Auto-play</div>
 </div>
 
-<!-- IMPACT SUMMARY OVERLAY (demo ending) -->
-<div class="ret-overlay" id="impact-overlay" style="z-index:120;background:var(--bg);justify-content:center;align-items:center" onclick="if(event.target===this)this.classList.remove('show')">
-  <div style="position:relative;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:28px 24px;max-width:320px;width:100%;box-shadow:var(--shadow-md);margin:auto">
-    <div style="position:absolute;top:10px;right:14px;font-size:20px;color:var(--text-3);cursor:pointer" onclick="document.getElementById('impact-overlay').classList.remove('show')">✕</div>
-    <div style="text-align:center;margin-bottom:14px">
-      <div style="font-size:32px">📊</div>
-      <div style="font-size:16px;font-weight:800">This Week's Impact</div>
-      <div style="font-size:11px;color:var(--text-3)">From the loop you just watched</div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-      <div style="background:var(--teal-light);border-radius:10px;padding:12px;text-align:center">
-        <div style="font-size:24px;font-weight:800;color:var(--teal)">+1</div>
-        <div style="font-size:10px;color:var(--text-2)">new activity<br>(Music & Tea)</div>
-      </div>
-      <div style="background:var(--purple-light);border-radius:10px;padding:12px;text-align:center">
-        <div style="font-size:24px;font-weight:800;color:var(--purple)">+1</div>
-        <div style="font-size:10px;color:var(--text-2)">cross-cultural moment<br>(Josefina)</div>
-      </div>
-      <div style="background:var(--amber-light);border-radius:10px;padding:12px;text-align:center">
-        <div style="font-size:24px;font-weight:800;color:var(--amber)">3</div>
-        <div style="font-size:10px;color:var(--text-2)">activities w/ 2+ visits<br>(returning)</div>
-      </div>
-      <div style="background:var(--card);border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border)">
-        <div style="font-size:24px;font-weight:800">Wk 3</div>
-        <div style="font-size:10px;color:var(--text-2)">going alone →<br>comfortable alone</div>
-      </div>
-    </div>
-    <div style="font-size:12px;font-weight:700;text-align:center;margin-bottom:8px">"From 0 → 3 different communities in 4 weeks."</div>
-    <div style="font-size:10px;color:var(--text-3);text-align:center;line-height:1.6">
-      North star metric: participations/user/month<br>
-      <strong>0 → 3 activities · 2 returning · 1 cross-cultural bridge</strong>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <script>
@@ -994,15 +959,11 @@ function runDemoStep() {
       } },
     { label: '✓ Loop Complete', fn: () => {
         stopDemo();
-        // Close all overlays first
         $('ret-overlay').classList.remove('show');
         $('chat-overlay').classList.remove('show');
-        // Go back to discover and reset
         goDiscover();
         zoomLevel = 1.0; applyZoom();
-        setTimeout(() => {
-          $('impact-overlay').classList.add('show');
-        }, 400);
+        showToast('Full loop ✓\nDiscover → Detail → Going → Return → Bridge Moment → Pulong → My Weeks\n\nPress ▶ to replay, or H to hide notes.');
       } }
   ];
   if (demoStep >= steps.length) { stopDemo(); return; }
