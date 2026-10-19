@@ -729,8 +729,8 @@ function openChat() {
       html += `<div class="cm-time">${m.time}</div>`;
       div.innerHTML = html;
       msgs.appendChild(div);
-      // Scroll to bottom to follow the latest message
-      msgs.scrollTop = msgs.scrollHeight;
+      // Only scroll to bottom from the 2nd message onward (1st stays at top)
+      if (i > 0) msgs.scrollTop = msgs.scrollHeight;
     }, i * 1200);
   });
 }
