@@ -995,7 +995,15 @@ function runDemoStep() {
       } },
     { label: '✓ Loop Complete', fn: () => {
         stopDemo();
-        $('impact-overlay').classList.add('show');
+        // Close all overlays first
+        $('ret-overlay').classList.remove('show');
+        $('chat-overlay').classList.remove('show');
+        // Go back to discover and reset
+        goDiscover();
+        zoomLevel = 1.0; applyZoom();
+        setTimeout(() => {
+          $('impact-overlay').classList.add('show');
+        }, 400);
       } }
   ];
   if (demoStep >= steps.length) { stopDemo(); return; }
