@@ -700,46 +700,45 @@ const chatMessages = [
   { from: 'user', text: '我想找 Finch 附近 3 站以内的音乐活动，周三下午', time: '9:16' },
   { from: 'pulong', text: '在 verified feed 里找到了 1 个：<br><br>🎵 Community Music & Tea<br>Tue 15:00 · Yorkville Seniors Lounge<br>4 站（不是 3 站以内，但最接近）<br><br>要不要我帮你报名？<br>或者下周三可能有新的，我帮你留意。', time: '9:16', source: '来源: Feed #14 · 最后验证 Oct 12', disclaimer: '我是程序，不是真人。信息来自图书馆 verified feed。' },
   { from: 'user', text: '好的，帮我报名', time: '9:17' },
-  { from: 'pulong', text: '✓ 已记录。周二下午 1 点我会提醒你。<br><br>还有：下次你想找别的活动，直接跟我说就行。', time: '9:17', source: 'Log updated: Music & Tea → RSVP ✓' }
+  { from: 'pulong', text: '✓ 已记录。周二下午 1 点我会提醒你。<br><br>下次想找别的活动，直接跟我说就行。', time: '9:17', source: 'Log updated: Music & Tea → RSVP ✓' }
 ];
-let chatIdx = 0;
 function openChat() {
   $('chat-overlay').classList.add('show');
   const msgs = $('chat-msgs');
   msgs.innerHTML = '';
-  chatIdx = 0;
-  nextChatMsg();
-}
-function nextChatMsg() {
-  if (chatIdx >= chatMessages.length) { chatIdx = 0; return; }
-  const m = chatMessages[chatIdx];
-  const div = document.createElement('div');
-  div.className = `chat-msg ${m.from}`;
-  let html = m.text;
-  if (m.source) html += `<div class="cm-source">${m.source}</div>`;
-  if (m.disclaimer) html += `<div class="cm-disclaimer">⚠️ ${m.disclaimer}</div>`;
-  html += `<div class="cm-time">${m.time || ''}</div>`;
-  div.innerHTML = html;
-  $('chat-msgs').appendChild(div);
-  $('chat-msgs').scrollTop = 99999;
-  chatIdx++;
+  // Auto-play all messages with 800ms stagger
+  chatMessages.forEach((m, i) => {
+    setTimeout(() => {
+      const div = document.createElement('div');
+      div.className = `chat-msg ${m.from}`;
+      let html = m.text;
+      if (m.source) html += `<div class="cm-source">${m.source}</div>`;
+      if (m.disclaimer) html += `<div class="cm-disclaimer">⚠️ ${m.disclaimer}</div>`;
+      html += `<div class="cm-time">${m.time}</div>`;
+      div.innerHTML = html;
+      msgs.appendChild(div);
+      msgs.scrollTop = 99999;
+    }, i * 800);
+  });
 }
 function sendChat() {
   const inp = $('chat-input');
   if (!inp.value.trim()) return;
+  const msgs = $('chat-msgs');
   const div = document.createElement('div');
   div.className = 'chat-msg user';
   div.innerHTML = inp.value + '<div class="cm-time">Now</div>';
-  $('chat-msgs').appendChild(div);
+  msgs.appendChild(div);
   inp.value = '';
-  $('chat-msgs').scrollTop = 99999;
+  msgs.scrollTop = 99999;
+  // Pulong responds after 1s
   setTimeout(() => {
     const resp = document.createElement('div');
     resp.className = 'chat-msg pulong';
-    resp.innerHTML = '我帮你查一下 verified feed…<br>找到了！<div class="cm-source">来源: Feed · 最后验证 Oct 12</div><div class="cm-disclaimer">⚠️ 我是程序，不是真人。</div>';
-    $('chat-msgs').appendChild(resp);
-    $('chat-msgs').scrollTop = 99999;
-  }, 800);
+    resp.innerHTML = '让我查一下 verified feed…<br><br>找到了 2 个匹配的活动。最接近的是 🎵 Community Music & Tea（Tue 15:00，4 站）。<br>需要我帮你报名吗？<div class="cm-source">来源: Feed #14 · #19 · 最后验证 Oct 12</div><div class="cm-disclaimer">⚠️ 我是程序，不是真人。所有信息来自图书馆 verified feed。</div>';
+    msgs.appendChild(resp);
+    msgs.scrollTop = 99999;
+  }, 1000);
 }
 function closeChat() { $('chat-overlay').classList.remove('show'); }
 
