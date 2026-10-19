@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AiXplore — Senior App (v3 · Loop)</title>
+<style>
+:root {
+  --bg: #fdf9f4;
+  --card: #fff;
+  --text: #2a2419;
+  --text-2: #6b5f50;
+  --text-3: #a39685;
+  --accent: #d4582a;
+  --accent-light: #fdf0e8;
+  --teal: #2e8b72;
+  --teal-light: #e6f5f0;
+  --amber: #f0a030;
+  --amber-light: #fef5e6;
+  --purple: #7c6fc0;
+  --purple-light: #f0edfa;
+  --rose: #c94a5e;
+  --rose-light: #fce8ec;
+  --border: #ede5d8;
+  --border-2: #f5f0e8;
+  --shadow: 0 4px 20px rgba(42,36,25,.06);
+  --shadow-md: 0 8px 32px rgba(42,36,25,.1);
+  --r: 14px;
+  --r-lg: 20px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system,'SF Pro Text','Inter',sans-serif;
+  background: #f0ebe3;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 20px 80px;
+  gap: 28px;
+  overflow: auto;
+}
+.stage { display: flex; gap: 28px; align-items: flex-start; }
+.stage-side { width: 240px; display: flex; flex-direction: column; gap: 12px; }
+.side-note {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px;
+  font-size: 11px; color: var(--text-2); line-height: 1.6;
+  box-shadow: var(--shadow);
+}
+.side-note strong { color: var(--text); font-size: 12px; display: block; margin-bottom: 4px; }
+.sn-tag {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  padding: 2px 6px; border-radius: 4px;
+  background: var(--teal-light); color: var(--teal); margin-bottom: 6px;
+}
+.sn-tag.orange { background: var(--accent-light); color: var(--accent); }
+.sn-tag.purple { background: var(--purple-light); color: var(--purple); }
+
+/* PHONE */
+.phone {
+  width: 400px; min-height: 800px;
+  background: var(--bg);
+  border-radius: 48px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.2), 0 0 0 8px #1a1a1a;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  position: relative;
+}
+.p-status {
+  height: 44px; padding: 12px 20px 0;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 14px; font-weight: 700; flex-shrink: 0;
+}
+.p-status-right { display: flex; gap: 5px; font-size: 11px; color: var(--text-3); font-weight: 400; }
+
+.app-hdr {
+  padding: 8px 18px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.app-hdr h1 { font-size: 18px; font-weight: 800; }
+.app-hdr h1 span { color: var(--accent); }
+.app-hdr .sub { font-size: 10px; color: var(--text-3); }
+.hdr-right { display: flex; align-items: center; gap: 6px; }
+.org-badge {
+  font-size: 9px; font-weight: 700; color: var(--teal);
+  background: var(--teal-light); padding: 3px 7px; border-radius: 5px;
+}
+.lang-pill {
+  font-size: 10px; font-weight: 600;
+  padding: 3px 8px; border-radius: 5px;
+  background: var(--border-2); border: 1px solid var(--border);
+  cursor: pointer; color: var(--text-2);
+}
+
+.p-content { flex:1; overflow-y:auto; padding:4px 16px 90px; }
+.scr { display:none; }
+.scr.active { display:block; }
+
+/* ONBOARDING */
+.ob-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 22px; margin: 12px 0; box-shadow: var(--shadow);
+}
+.ob-title { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+.ob-sub { font-size: 13px; color: var(--text-2); line-height: 1.6; margin-bottom: 14px; }
+.ob-sub strong { color: var(--text); }
+.ob-disclose {
+  background: var(--amber-light); border: 1px solid #f0d090;
+  border-radius: 10px; padding: 11px 13px;
+  font-size: 12px; line-height: 1.6; margin-bottom: 14px;
+}
+.ob-disclose .od-t { font-weight: 700; color: var(--amber); font-size: 11px; margin-bottom: 3px; }
+.ob-know { display: flex; gap: 8px; margin-bottom: 12px; }
+.ob-know-item { flex:1; padding: 9px; border-radius: 8px; font-size: 11px; line-height: 1.5; }
+.ob-know-item.yes { background: var(--teal-light); color: var(--teal); }
+.ob-know-item.no { background: var(--border-2); color: var(--text-3); }
+.ob-know-item strong { display: block; font-size: 10px; margin-bottom: 2px; }
+.ob-profile-preview {
+  background: var(--teal-light); border-radius: 10px; padding: 12px;
+  margin-bottom: 14px; font-size: 12px; line-height: 1.8;
+}
+.ob-profile-preview .pp-title { font-weight: 700; font-size: 11px; color: var(--teal); margin-bottom: 4px; }
+.ob-profile-preview .pp-row { display: flex; justify-content: space-between; padding: 2px 0; }
+.ob-profile-preview .pp-row .k { color: var(--text-2); }
+.ob-profile-preview .pp-row .v { font-weight: 600; }
+.ob-btns { display: flex; gap: 10px; }
+.ob-btn {
+  flex:1; padding: 14px; border-radius: 12px;
+  font-size: 14px; font-weight: 700; text-align: center;
+  cursor: pointer; transition: all .2s;
+}
+.ob-btn.primary { background: var(--teal); color: #fff; }
+.ob-btn.primary:hover { filter: brightness(1.1); }
+.ob-btn.confirm { background: var(--card); color: var(--text); border: 2px solid var(--border); }
+.ob-btn.confirm:hover { border-color: var(--accent); color: var(--accent); }
+.ob-footer { margin-top: 14px; font-size: 10px; color: var(--text-3); text-align: center; line-height: 1.5; }
+
+/* DISCOVER */
+.disc-hdr { margin: 10px 0 14px; }
+.disc-hdr h2 { font-size: 19px; font-weight: 800; }
+.disc-hdr p { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.why-box {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 12px 14px; margin-bottom: 14px;
+  font-size: 12px; line-height: 1.6; color: var(--text-2);
+}
+.why-box .wb-title { font-weight: 700; color: var(--text); font-size: 11px; margin-bottom: 4px; }
+
+.sugg-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 18px; margin-bottom: 12px;
+  box-shadow: var(--shadow); cursor: pointer; transition: all .2s;
+  position: relative; overflow: hidden;
+}
+.sugg-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.sugg-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.sugg-card.rank1::before { background: var(--teal); }
+.sugg-card.rank2::before { background: var(--amber); }
+.sugg-card.rank3::before { background: var(--purple); }
+.sugg-rank {
+  position: absolute; top: 10px; right: 12px;
+  font-size: 10px; font-weight: 700; color: var(--text-3);
+}
+.sugg-tag {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  padding: 2px 7px; border-radius: 4px; margin-bottom: 8px;
+}
+.sugg-card.rank1 .sugg-tag { background: var(--teal-light); color: var(--teal); }
+.sugg-card.rank2 .sugg-tag { background: var(--amber-light); color: var(--amber); }
+.sugg-card.rank3 .sugg-tag { background: var(--purple-light); color: var(--purple); }
+.sugg-title { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+.sugg-meta { font-size: 13px; color: var(--text-2); line-height: 1.7; }
+.sugg-meta .route { color: var(--teal); font-weight: 500; font-size: 12px; }
+.sugg-meta .social { font-size: 11px; color: var(--text-3); margin-top: 4px; display: block; }
+.sugg-why {
+  margin-top: 10px; padding: 10px 12px;
+  background: var(--border-2); border-radius: 8px;
+  font-size: 12px; color: var(--text-2); line-height: 1.6;
+}
+.sugg-why .ai-label {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 9px; font-weight: 700; color: var(--purple);
+  background: var(--purple-light); padding: 2px 6px;
+  border-radius: 3px; margin-bottom: 4px;
+}
+
+/* PULONG BAR */
+.pulong-bar {
+  position: absolute; bottom: 80px; left: 16px; right: 16px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 12px 14px;
+  box-shadow: var(--shadow-md); z-index: 5;
+  display: flex; align-items: center; gap: 10px;
+}
+.pulong-av {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--accent); display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.pulong-input {
+  flex: 1; font-size: 13px; color: var(--text-3);
+  border-bottom: 1px solid var(--border); padding-bottom: 4px;
+}
+.pulong-send {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; cursor: pointer;
+}
+.pulong-bar .pb-channel {
+  font-size: 9px; color: var(--text-3);
+  position: absolute; top: -8px; right: 12px;
+  background: var(--card); padding: 0 6px;
+}
+
+/* ACTIVITY DETAIL */
+.det-back {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 13px; font-weight: 600; color: var(--teal);
+  cursor: pointer; margin: 10px 0 12px;
+}
+.det-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 20px; margin-bottom: 14px;
+  box-shadow: var(--shadow-md); position: relative; overflow: hidden;
+}
+.det-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--teal), var(--accent));
+}
+.det-title { font-size: 22px; font-weight: 800; margin: 8px 0 6px; }
+.det-meta { font-size: 14px; color: var(--text-2); line-height: 1.8; }
+.det-section {
+  margin-top: 14px; padding: 12px; background: var(--border-2);
+  border-radius: 10px; font-size: 13px; line-height: 1.7;
+}
+.det-section .ds-title { font-weight: 700; font-size: 11px; color: var(--text-3); margin-bottom: 4px; }
+.det-ai {
+  background: var(--purple-light); border-radius: 10px; padding: 12px;
+  margin-top: 12px; font-size: 13px; line-height: 1.7;
+}
+.det-ai .da-title { font-weight: 700; font-size: 11px; color: var(--purple); margin-bottom: 4px; }
+.det-social {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 14px; padding: 10px; background: var(--teal-light);
+  border-radius: 10px; font-size: 12px; color: var(--teal); font-weight: 500;
+}
+.det-btns { display: flex; gap: 10px; margin-top: 16px; }
+.det-btn {
+  flex: 1; padding: 14px; border-radius: 12px;
+  font-size: 14px; font-weight: 700; text-align: center;
+  cursor: pointer; transition: all .2s;
+}
+.det-btn.go { background: var(--teal); color: #fff; }
+.det-btn.go:hover { filter: brightness(1.1); }
+.det-btn.skip { background: var(--card); color: var(--text-2); border: 2px solid var(--border); }
+.det-btn.skip:hover { border-color: var(--accent); color: var(--accent); }
+
+/* RETURN FLOW */
+.ret-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 22px; margin: 12px 0;
+  box-shadow: var(--shadow); text-align: center;
+}
+.ret-emoji { font-size: 40px; margin-bottom: 10px; }
+.ret-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+.ret-sub { font-size: 13px; color: var(--text-2); line-height: 1.5; margin-bottom: 16px; }
+.ret-opts { display: flex; flex-direction: column; gap: 8px; }
+.ret-opt {
+  padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all .15s; text-align: center;
+  border: 2px solid var(--border); background: var(--card);
+}
+.ret-opt:hover { border-color: var(--teal); }
+.ret-opt.liked { border-color: var(--teal); background: var(--teal-light); color: var(--teal); }
+.ret-opt.ok { border-color: var(--amber); background: var(--amber-light); color: var(--amber); }
+.ret-opt.dissatisf { border-color: var(--rose); background: var(--rose-light); color: var(--rose); }
+.ret-opt.no { border-color: var(--text-3); background: var(--border-2); color: var(--text-3); }
+
+/* RETURN RESULT */
+.ret-result {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 22px; margin: 12px 0;
+  box-shadow: var(--shadow);
+}
+.rr-title { font-size: 17px; font-weight: 800; margin-bottom: 10px; }
+.rr-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--border-2);
+  font-size: 13px; line-height: 1.5;
+}
+.rr-item:last-child { border: none; }
+.rr-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+.rr-dot.teal { background: var(--teal); }
+.rr-dot.amber { background: var(--amber); }
+.rr-dot.purple { background: var(--purple); }
+.rr-item strong { color: var(--text); }
+
+/* MY */
+.my-header { text-align: center; padding: 16px 0; }
+.my-av {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), #6bc5a8);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 800; color: #fff; margin: 0 auto 8px;
+}
+.my-name { font-size: 18px; font-weight: 800; }
+.my-sub { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.my-section-title { font-size: 12px; font-weight: 700; color: var(--text-3); margin: 14px 0 8px; }
+.my-stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.my-stat {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px; text-align: center;
+}
+.my-stat .n { font-size: 20px; font-weight: 800; color: var(--teal); }
+.my-stat.hl .n { color: var(--accent); }
+.my-stat .l { font-size: 10px; color: var(--text-3); margin-top: 2px; }
+.my-info-list { margin-bottom: 14px; }
+.my-info-item {
+  display: flex; align-items: center; padding: 10px 12px;
+  background: var(--card); border-radius: 8px; margin-bottom: 5px;
+  border: 1px solid var(--border); font-size: 12px;
+}
+.my-info-item .k { flex: 1; color: var(--text-2); }
+.my-info-item .v { font-weight: 600; }
+.stop-section { text-align: center; margin-top: 16px; }
+.stop-btn {
+  display: inline-block; padding: 12px 24px; border-radius: 10px;
+  font-size: 14px; font-weight: 700; color: var(--accent);
+  background: var(--accent-light); border: 2px solid var(--accent);
+  cursor: pointer; transition: all .2s;
+}
+.stop-btn:hover { background: var(--accent); color: #fff; }
+.stop-sub { font-size: 10px; color: var(--text-3); margin-top: 6px; }
+
+/* TRUST LINE */
+.trust-line {
+  text-align: center; font-size: 10px; color: var(--text-3);
+  padding: 10px 0; line-height: 1.5;
+}
+.trust-line strong { color: var(--text-2); }
+
+/* TAB BAR */
+.tab-bar {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 72px; background: var(--card);
+  border-top: 1px solid var(--border);
+  display: flex; padding: 6px 12px 20px; gap: 4px; z-index: 10;
+}
+.tab {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  cursor: pointer; padding: 6px; border-radius: 8px; transition: all .15s;
+}
+.tab:hover { background: var(--border-2); }
+.tab.active { background: var(--accent-light); }
+.tab .t-icon { font-size: 20px; }
+.tab .t-label { font-size: 10px; font-weight: 600; color: var(--text-3); }
+.tab.active .t-label { color: var(--accent); }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+  background: var(--text); color: #fff;
+  padding: 12px 20px; border-radius: 10px;
+  font-size: 13px; box-shadow: var(--shadow-md);
+  z-index: 200; opacity: 0; transition: opacity .3s; pointer-events: none;
+  max-width: 400px; text-align: center; line-height: 1.5;
+}
+.toast.show { opacity: 1; }
+
+@media (max-width: 900px) {
+  .stage { flex-direction: column; align-items: center; }
+  .stage-side { width: auto; flex-direction: row; flex-wrap: wrap; }
+  .side-note { flex: 1; min-width: 200px; }
+}
+
+/* ZOOM CONTROLS */
+.zoom-panel {
+  position: fixed; top: 20px; right: 20px; z-index: 300;
+  display: flex; flex-direction: column; gap: 4px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 6px;
+  box-shadow: var(--shadow-md);
+}
+.zoom-btn {
+  width: 32px; height: 32px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700; cursor: pointer;
+  border: none; background: var(--border-2); color: var(--text);
+  transition: all .15s;
+}
+.zoom-btn:hover { background: var(--accent); color: #fff; }
+.zoom-btn.hidden-notes { background: var(--accent); color: #fff; }
+.zoom-pct {
+  text-align: center; font-size: 10px; font-weight: 700;
+  color: var(--text-3); padding: 2px 0;
+}
+body { overflow: auto; }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <!-- LEFT: LOGIC NOTES -->
+  <div class="stage-side">
+    <div class="side-note">
+      <div class="sn-tag">CORE LOOP</div>
+      <strong>Setup once → then 4 steps repeat weekly</strong>
+      Discover (rank 3-5) → Understand (explain in her language) → Attend (reminders + route + social proof) → Return (branch by answer)
+    </div>
+    <div class="side-note">
+      <div class="sn-tag orange">RULES vs AI</div>
+      <strong>Rules do: filter + rank. AI does: explain + listen.</strong>
+      Facts ONLY from verified feed. If question not in feed → "I'll check with the organizer." AI never invents events.
+    </div>
+    <div class="side-note">
+      <div class="sn-tag purple">RETURN BRANCHES</div>
+      <strong>5 paths</strong>
+      ✓ Liked → next session + standing reminder<br>
+      ~ OK → similar but different type<br>
+      ✗ Didn't like → why buttons (far / language / alone / boring) → update profile<br>
+      — Didn't go → what blocked? → fix next time<br>
+      … No reply → gentle nudge 2 days later
+    </div>
+    <div class="side-note">
+      <strong>INTERACT</strong>
+      Click "Discover" tab · Click a suggestion card · Click "Going" for detail · Click return options · Click "My" for profile
+    </div>
+  </div>
+
+  <!-- PHONE -->
+  <div class="phone">
+    <div class="p-status">
+      <span>09:15</span>
+      <div class="p-status-right"><span>4G</span><span>🔋 82%</span></div>
+    </div>
+
+    <div class="app-hdr">
+      <div>
+        <h1>Ai<span>Xplore</span></h1>
+        <div class="sub">Your community helper</div>
+      </div>
+      <div class="hdr-right">
+        <div class="org-badge">📚 NYPL</div>
+        <div class="lang-pill" onclick="showToast('Language: English → 中文 → Tagalog\nContent follows user setting. Pulong explains in her language.')">EN</div>
+      </div>
+    </div>
+
+    <div class="p-content">
+
+      <!-- ONBOARDING (Setup · once) -->
+      <div class="scr" id="scr-onboard">
+        <div class="ob-card">
+          <div class="ob-title">Hi Mei,</div>
+          <div class="ob-sub">
+            <strong>Your daughter set this up for you</strong> at North York Library.<br>
+            This is a <strong>computer helper</strong>. It finds activities near you and reminds you.
+          </div>
+
+          <div class="ob-disclose">
+            <div class="od-t">⚠️ Important</div>
+            This is a <strong>program</strong>, not a real person.<br>
+            All activity info is <strong>verified</strong> by the library. Real, not made up.
+          </div>
+
+          <div class="ob-profile-preview">
+            <div class="pp-title">Your profile (set by your daughter, read-only)</div>
+            <div class="pp-row"><span class="k">Language</span><span class="v">Mandarin</span></div>
+            <div class="pp-row"><span class="k">Nearest TTC</span><span class="v">Finch Station</span></div>
+            <div class="pp-row"><span class="k">Interests</span><span class="v">Calligraphy · Walking · Music</span></div>
+            <div class="pp-row"><span class="k">Days</span><span class="v">Tue / Wed / Fri</span></div>
+            <div class="pp-row"><span class="k">Budget</span><span class="v">Under $10</span></div>
+            <div class="pp-row"><span class="k">Comfortable alone?</span><span class="v">Learning</span></div>
+          </div>
+
+          <div class="ob-know">
+            <div class="ob-know-item yes">
+              <strong>It knows:</strong>
+              Your area, language,<br>interests, budget
+            </div>
+            <div class="ob-know-item no">
+              <strong>It does NOT:</strong>
+              ID, bank, medical<br>or track you
+            </div>
+          </div>
+
+          <div class="ob-btns">
+            <div class="ob-btn primary" onclick="goDiscover()">Start →</div>
+            <div class="ob-btn confirm" onclick="showToast('Confirmation sent to your daughter via WhatsApp')">Ask my daughter</div>
+          </div>
+
+          <div class="ob-footer">
+            By North York Public Library<br>
+            Your daughter can stop this at any time · data deleted in 24h
+          </div>
+        </div>
+      </div>
+
+      <!-- DISCOVER -->
+      <div class="scr active" id="scr-discover">
+        <div class="disc-hdr">
+          <h2>This week for you, Mei</h2>
+          <p>3 picked from 22 activities near Finch. Ranked by your interests + what's new.</p>
+        </div>
+
+        <div class="why-box">
+          <div class="wb-title">Why these 3?</div>
+          You like calligraphy and walking. These are within 4 stops of Finch, under $10, on days you said you're free. #1 is new this week. #2 is a repeat (you liked it last time). #3 is something different to try.
+        </div>
+
+        <!-- SUGGESTION 1 -->
+        <div class="sugg-card rank1" onclick="goDetail('calligraphy')">
+          <div class="sugg-rank">#1 · Best match</div>
+          <div class="sugg-tag">New this week</div>
+          <div class="sugg-title">🖌️ Calligraphy Circle</div>
+          <div class="sugg-meta">
+            Wed 14:00 · North York Chinese Community Centre<br>
+            <span class="route">TTC: Finch Stn → 2 stops to Don Valley Dr</span><br>
+            <span style="color:var(--teal);font-size:12px">$5 · Materials provided · People come alone: ✓</span>
+            <span class="social">2 others from AiXplore are going</span>
+          </div>
+          <div class="sugg-why">
+            <div class="ai-label">🤖 Pulong explains</div>
+            你喜欢书法，这个是周三下午的，离你不远，才 $5。材料他们都帮你准备好了。另外有 2 个人也报名了。
+          </div>
+        </div>
+
+        <!-- SUGGESTION 2 -->
+        <div class="sugg-card rank2" onclick="goDetail('walk')">
+          <div class="sugg-rank">#2 · You liked before</div>
+          <div class="sugg-tag">Return</div>
+          <div class="sugg-title">🚶‍♀️ Finch Green Walking Group</div>
+          <div class="sugg-meta">
+            Fri 10:00 · Meet at Finch Station Exit C<br>
+            <span class="route">Starts right at your stop · No fare needed</span><br>
+            <span style="color:var(--teal);font-size:12px">Free · Bring water · 1 hour walk</span>
+            <span class="social">Last time you said "nice people, good pace"</span>
+          </div>
+          <div class="sugg-why">
+            <div class="ai-label">🤖 Pulong explains</div>
+            上次你参加完了说"人好，速度合适"。这周五同一时间，从 Finch 站 C 出口开始。
+          </div>
+        </div>
+
+        <!-- SUGGESTION 3 -->
+        <div class="sugg-card rank3" onclick="goDetail('music')">
+          <div class="sugg-rank">#3 · New to try</div>
+          <div class="sugg-tag">Different type</div>
+          <div class="sugg-title">🎵 Community Music & Tea</div>
+          <div class="sugg-meta">
+            Tue 15:00 · Yorkville Seniors Lounge<br>
+            <span class="route">TTC: Finch Stn → York St, 4 stops</span><br>
+            <span style="color:var(--teal);font-size:12px">Free · Bring a teacup · Everyone talks, no pressure</span>
+            <span class="social">A new type: not walking, not calligraphy. Just music + chat.</span>
+          </div>
+          <div class="sugg-why">
+            <div class="ai-label">🤖 Pulong explains</div>
+            你这个喜欢音乐。这个是唱英文歌+喝茶，不用表演，大家轮流唱。你在 Finch 坐 4 站就到了。
+          </div>
+        </div>
+
+        <div class="trust-line"><strong>By North York Public Library</strong> · Your daughter can stop this anytime</div>
+      </div>
+
+      <!-- DETAIL (Understand + Attend) -->
+      <div class="scr" id="scr-detail">
+        <div class="det-back" onclick="goDiscover()">← Back to this week</div>
+        <div class="det-card" id="det-card">
+          <div class="sugg-tag" id="det-tag" style="background:var(--teal-light);color:var(--teal)">New this week</div>
+          <div class="det-title" id="det-title">Calligraphy Circle 🖌️</div>
+          <div class="det-meta" id="det-meta">
+            Wednesday 14:00–16:00<br>
+            North York Chinese Community Centre<br>
+            20 Fincastle Ave, North York<br>
+            <span style="color:var(--teal)">TTC: Finch Stn → Don Valley Dr (2 stops)</span>
+          </div>
+
+          <div class="det-section">
+            <div class="ds-title">WHAT TO EXPECT</div>
+            <span id="det-expect">Instructor guides you. You'll do 30 min practice + 30 min free writing. Materials (brush, ink, paper) are provided. About 8–12 people. People come alone. It's quiet and relaxing. Bring a notebook if you want to practice more at home.</span>
+          </div>
+
+          <div class="det-ai">
+            <div class="da-title">🤖 Pulong, in your language</div>
+            <span id="det-ai-text">你只需要人到就行。笔和墨他们都帮你准备好了。一共大概 8-12 个人，都是来练习的，不用表演。挺安静的。如果你想在家练，带个小本子。
+            <br><br><em style="font-size:11px;color:var(--text-3)">If Pulong doesn't know the answer: "I'll check with the organizer and let you know."</em></span>
+          </div>
+
+          <div class="det-social" id="det-social">
+            <span>👥</span> 2 others from AiXplore are going (opted in)
+          </div>
+
+          <div class="det-btns">
+            <div class="det-btn go" onclick="confirmGo()">✓ Going — set reminder</div>
+            <div class="det-btn skip" onclick="showToast('OK, not this week. Pulong will suggest something else next week.')">Not this time</div>
+          </div>
+        </div>
+
+        <div class="det-card" id="det-rem" style="display:none">
+          <div style="font-size:13px;font-weight:700;margin-bottom:8px">📅 Reminder confirmed</div>
+          <div style="font-size:13px;color:var(--text-2);line-height:1.7">
+            <strong>Wed 7:00am</strong> — "Calligraphy Circle today at 2pm. Bus or TTC Finch → Don Valley Dr, 2 stops."<br>
+            <strong>Wed 1:00pm</strong> — "Going now? Meet at 20 Fincastle Ave."
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:var(--text-3)">Reminders come via your phone. You can skip them.</div>
+        </div>
+      </div>
+
+      <!-- RETURN -->
+      <div class="scr" id="scr-return">
+        <div class="ret-card" id="ret-ask">
+          <div class="ret-emoji">💬</div>
+          <div class="ret-title">How was it, Mei?</div>
+          <div class="ret-sub">Pulong asks after every activity.<br>Your answer helps pick better ones next week.</div>
+          <div class="ret-opts">
+            <div class="ret-opt liked" onclick="retResult('liked')">👍 Liked it</div>
+            <div class="ret-opt ok" onclick="retResult('ok')">👌 It was OK</div>
+            <div class="ret-opt dissatisf" onclick="retResult('dissatisf')">👎 Didn't like it</div>
+            <div class="ret-opt no" onclick="retResult('no')">😐 I didn't go</div>
+          </div>
+          <div style="margin-top:12px;font-size:11px;color:var(--text-3)">No answer? Pulong sends one gentle nudge in 2 days, then waits.</div>
+        </div>
+
+        <div class="ret-result" id="ret-result" style="display:none">
+          <div class="rr-title" id="rr-title"></div>
+          <div id="rr-body"></div>
+        </div>
+      </div>
+
+      <!-- MY -->
+      <div class="scr" id="scr-my">
+        <div class="my-header">
+          <div class="my-av">M</div>
+          <div class="my-name">Mei (李梅)</div>
+          <div class="my-sub">68 · North York · Finch Station area</div>
+        </div>
+
+        <div class="my-section-title">This month</div>
+        <div class="my-stat-row">
+          <div class="my-stat"><div class="n">3</div><div class="l">activities attended</div></div>
+          <div class="my-stat hl"><div class="n">2</div><div class="l">returned 2×</div></div>
+          <div class="my-stat"><div class="n">1</div><div class="l">new type tried</div></div>
+        </div>
+
+        <div class="my-section-title">Your profile (set by daughter · read-only)</div>
+        <div class="my-info-list">
+          <div class="my-info-item"><span class="k">Language</span><span class="v">Mandarin (中文)</span></div>
+          <div class="my-info-item"><span class="k">Nearest TTC</span><span class="v">Finch Station</span></div>
+          <div class="my-info-item"><span class="k">Interests</span><span class="v">Calligraphy · Walking · Music</span></div>
+          <div class="my-info-item"><span class="k">Available days</span><span class="v">Tue / Wed / Fri</span></div>
+          <div class="my-info-item"><span class="k">Budget</span><span class="v">Under $10</span></div>
+          <div class="my-info-item"><span class="k">Mobility</span><span class="v">Walks fine · No stairs OK</span></div>
+          <div class="my-info-item"><span class="k">Comfortable alone</span><span class="v">Learning (week 2)</span></div>
+          <div class="my-info-item"><span class="k">Daughter</span><span class="v">Lily · +1 416-xxx</span></div>
+        </div>
+
+        <div class="my-section-title">What we store / don't store</div>
+        <div style="background:var(--border-2);border-radius:10px;padding:12px;font-size:11px;line-height:1.8;color:var(--text-2)">
+          <strong>Store:</strong> Activity name + date + your feedback + return count.<br>
+          <strong>Don't store:</strong> ID, bank, medical, phone location, or anything your daughter didn't set.<br>
+          <strong>Runs:</strong> North York Public Library.
+        </div>
+
+        <div class="stop-section">
+          <div class="stop-btn" onclick="showToast('Stopping… Lily will be notified. All data deleted in 24h. No account, no email, no call needed.')">✕ Stop this service</div>
+          <div class="stop-sub">Or tell Lily to say "stop" in the app. Data gone in 24 hours.</div>
+        </div>
+
+        <div class="trust-line"><strong>By North York Public Library</strong> · No login. No password. No email.</div>
+      </div>
+
+    </div>
+
+    <!-- PULONG BAR (always visible on Discover tab) -->
+    <div class="pulong-bar" id="pulong-bar" style="display:none">
+      <div class="pulong-av">💬</div>
+      <div class="pulong-input">Ask Pulong anything…</div>
+      <div class="pulong-send" onclick="pulongAsk()">→</div>
+      <div class="pb-channel">via WeChat · Mei's choice</div>
+    </div>
+
+    <!-- TAB BAR -->
+    <div class="tab-bar">
+      <div class="tab" onclick="goOnboard()"><div class="t-icon">🌿</div><div class="t-label">Setup</div></div>
+      <div class="tab active" onclick="goDiscover()"><div class="t-icon">🔍</div><div class="t-label">Discover</div></div>
+      <div class="tab" onclick="goReturn()"><div class="t-icon">💬</div><div class="t-label">Return</div></div>
+      <div class="tab" onclick="goMy()"><div class="t-icon">👤</div><div class="t-label">My</div></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: NOTES -->
+  <div class="stage-side" style="width:220px">
+    <div class="side-note">
+      <div class="sn-tag">DATA (3 pieces)</div>
+      <strong>Profile</strong> = language, TTC stop, interests, days, budget, mobility, comfort level<br>
+      <strong>Feed</strong> = 22 verified activities (name, organizer, time, cost, language, "people come alone", route, last verified date)<br>
+      <strong>Log</strong> = what was suggested, opened, RSVP'd, attended, feedback, return count
+    </div>
+    <div class="side-note">
+      <div class="sn-tag orange">RANKING RULES</div>
+      <strong>After filtering:</strong>
+      1. Match with interests (highest weight)<br>
+      2. "People come alone: yes" → weighted up for new users<br>
+      3. Past feedback (more of what she liked)<br>
+      4. A bit of novelty (not same type every time)
+    </div>
+    <div class="side-note">
+      <div class="sn-tag purple">AI BOUNDARY</div>
+      <strong>AI can:</strong> explain in her language, understand free-text ("something with music near Finch"), read feedback<br>
+      <strong>AI cannot:</strong> invent events, give times/places not in feed. If unknown → "I'll check with the organizer."
+    </div>
+    <div class="side-note">
+      <div class="sn-tag">IMPACT MEASURES</div>
+      Auto from log:<br>
+      • % trying new activity in 30d<br>
+      • % attending without family help<br>
+      • % returning 3+ times<br>
+      • North star: meaningful participations / user / month
+    </div>
+    <div class="side-note">
+      <div class="sn-tag">SCOPED OUT</div>
+      No real logins · No real push notifications · No maps API · No partner dashboard. Simulated with buttons.
+    </div>
+  </div>
+</div>
+
+<div class="zoom-panel">
+  <button class="zoom-btn" onclick="zoomIn()" title="Zoom in (+)">+</button>
+  <div class="zoom-pct" id="zoom-pct">100%</div>
+  <button class="zoom-btn" onclick="zoomOut()" title="Zoom out (−)">−</button>
+  <button class="zoom-btn" onclick="zoomReset()" title="Reset (0)" style="font-size:12px">⟳</button>
+  <div style="width:100%;height:1px;background:var(--border);margin:4px 0"></div>
+  <button class="zoom-btn" id="notes-toggle" onclick="toggleNotes()" title="Show/hide notes (H)">📝</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const D = document;
+function $(id) { return D.getElementById(id); }
+
+function setTab(n) {
+  D.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===n));
+}
+function showScr(id) {
+  D.querySelectorAll('.scr').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  $('pulong-bar').style.display = (id === 'scr-discover') ? 'flex' : 'none';
+}
+function goOnboard() { showScr('scr-onboard'); setTab(0); }
+function goDiscover() { showScr('scr-discover'); setTab(1); }
+function goDetail(key) { showScr('scr-detail'); setTab(1); fillDetail(key); }
+function goReturn() { showScr('scr-return'); setTab(2); $('ret-ask').style.display='block'; $('ret-result').style.display='none'; }
+function goMy() { showScr('scr-my'); setTab(3); }
+function goDetail(key) {
+  const data = {
+    calligraphy: {
+      tag: 'New this week', tagBg: 'var(--teal-light)', tagC: 'var(--teal)',
+      title: 'Calligraphy Circle 🖌️',
+      meta: 'Wednesday 14:00–16:00<br>North York Chinese Community Centre<br>20 Fincastle Ave, North York<br><span style="color:var(--teal)">TTC: Finch Stn → Don Valley Dr (2 stops)</span>',
+      expect: 'Instructor guides you. 30 min practice + 30 min free writing. Materials (brush, ink, paper) provided. About 8–12 people. People come alone. Quiet and relaxing.',
+      ai: '你只需要人到就行。笔和墨他们都帮你准备好了。一共大概 8-12 个人，都是来练习的，不用表演。挺安静的。如果你想在家练，带个小本子。',
+      social: '👥 2 others from AiXplore are going (opted in)'
+    },
+    walk: {
+      tag: 'Return · You liked last time', tagBg: 'var(--amber-light)', tagC: 'var(--amber)',
+      title: 'Finch Green Walking Group 🚶‍♀️',
+      meta: 'Friday 10:00–11:00<br>Meet at Finch Station Exit C<br><span style="color:var(--teal)">Starts right at your stop · No fare needed</span>',
+      expect: 'Led walk around Finch Green. About 5km, slow pace (4 km/h). The leader knows all the routes. People of all ages. Bring water. They end with coffee at a nearby café if you want.',
+      ai: '上次你参加完了说"人好，速度合适"。这周五同一时间，从 Finch 站 C 出口出来就行，不用坐公交。走大概 1 小时。结束后可以去附近的咖啡馆坐坐。',
+      social: '👥 3 others from AiXplore are going'
+    },
+    music: {
+      tag: 'New type to try', tagBg: 'var(--purple-light)', tagC: 'var(--purple)',
+      title: 'Community Music & Tea 🎵',
+      meta: 'Tuesday 15:00–17:00<br>Yorkville Seniors Lounge<br>48 Yorkville Ave<br><span style="color:var(--teal)">TTC: Finch Stn → York St (4 stops)</span>',
+      expect: 'Singing + tea. Everyone takes a turn singing a song (English or any language). No performance pressure. About 15 people. Tea and biscuits provided. Very social.',
+      ai: '你这个喜欢音乐。这个是唱英文歌+喝茶，不用表演，大家轮流唱。你想唱就唱，不想唱就喝。15 个人左右，挺热闹的。你从 Finch 坐 4 站就到了。',
+      social: '👥 1 other from AiXplore is going'
+    }
+  };
+  const d = data[key] || data.calligraphy;
+  $('det-tag').textContent = d.tag;
+  $('det-tag').style.background = d.tagBg;
+  $('det-tag').style.color = d.tagC;
+  $('det-title').textContent = d.title;
+  $('det-meta').innerHTML = d.meta;
+  $('det-expect').textContent = d.expect;
+  $('det-ai-text').textContent = d.ai;
+  $('det-social').innerHTML = d.social;
+  $('det-rem').style.display = 'none';
+}
+
+function confirmGo() {
+  $('det-rem').style.display = 'block';
+  showToast('✓ Reminder set: Wed 7am + 1pm\nPulong will say in Mandarin: "明天下午 2 点，书法课。从 Finch 站坐 2 站。"');
+  setTimeout(() => goReturn(), 2000);
+}
+
+function retResult(type) {
+  $('ret-ask').style.display = 'none';
+  $('ret-result').style.display = 'block';
+  const map = {
+    liked: {
+      title: '👍 Great! What do you want next?',
+      body: `
+        <div class="rr-item"><div class="rr-dot teal"></div><div><strong>Suggested:</strong> Next Calligraphy Circle is <strong>Wed next week, same time</strong>.</div></div>
+        <div class="rr-item"><div class="rr-dot teal"></div><div><strong>Standing reminder:</strong> "Every Wednesday at 7am: Calligraphy at 2pm." On or off?</div></div>
+        <div class="rr-item"><div class="rr-dot amber"></div><div><strong>Log updated:</strong> Liked Calligraphy. Return count: 2. Next suggestion weights "more like this."</div></div>`
+    },
+    ok: {
+      title: '👌 OK — not quite a favourite',
+      body: `
+        <div class="rr-item"><div class="rr-dot amber"></div><div><strong>Understood.</strong> Pulong will suggest something <strong>similar but different</strong> next week — maybe a different time, a different teacher, or a shorter session.</div></div>
+        <div class="rr-item"><div class="rr-dot purple"></div><div><strong>Log updated:</strong> "OK" feedback. No profile change. Next: try a variation.</div></div>`
+    },
+    dissatisf: {
+      title: '👎 What was it? Pick one or more:',
+      body: `
+        <div class="rr-item"><div class="rr-dot amber"></div><div><strong>Too far?</strong> → Pulong will filter closer activities next time.</div></div>
+        <div class="rr-item"><div class="rr-dot amber"></div><div><strong>Language?</strong> → Pulong will look for groups that speak your language.</div></div>
+        <div class="rr-item"><div class="rr-dot amber"></div><div><strong>Felt alone?</strong> → Pulong will prioritise "people come alone: yes" + groups with established regulars.</div></div>
+        <div class="rr-item"><div class="rr-dot amber"></div><div><strong>Not interesting?</strong> → Pulong will try a different type (e.g., music instead of calligraphy).</div></div>
+        <div class="rr-item"><div class="rr-dot purple"></div><div><strong>Profile updated.</strong> Next suggestions will reflect your answer.</div></div>`
+    },
+    no: {
+      title: '😐 You didn\'t go — what got in the way?',
+      body: `
+        <div class="rr-item"><div class="rr-dot amber"></div><div><strong>Too early?</strong> → Pulong will suggest later start times.</div></div>
+        <div class="rr-item"><div class="rr-dot amber"></div><div><strong>Didn't feel ready?</strong> → Pulong will suggest a "buddy" (someone who goes regularly and can meet you there).</div></div>
+        <div class="rr-item"><div class="rr-dot amber"></div><div><strong>Weather?</strong> → Pulong will note this and suggest indoor alternatives.</div></div>
+        <div class="rr-item"><div class="rr-dot amber"></div><div><strong>Forgot?</strong> → Pulong will add an earlier reminder next time.</div></div>
+        <div class="rr-item"><div class="rr-dot purple"></div><div><strong>No penalty.</strong> Pulong will try again next week with a different suggestion.</div></div>`
+    }
+  };
+  const d = map[type];
+  $('rr-title').textContent = d.title;
+  $('rr-body').innerHTML = d.body;
+  showToast('Logged. Pulong will use this next week to pick better suggestions.');
+}
+
+function pulongAsk() {
+  showToast('Pulong (via WeChat):\n\n"你想找 Finch 附近 3 站以内的音乐活动，周三下午。"\n\n→ Pulong searches the verified feed → 1 match found.\n→ "Yorkville Seniors Lounge, Tuesday 15:00, 4 stops. Close but not exactly what you asked. Want me to check if there\'s one on Wednesday?"\n\n[AI only uses verified data. If not in feed → "I\'ll check with the organizer."]');
+}
+
+function showToast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+/* ZOOM */
+let zoomLevel = 1.0;
+const zoomStage = () => document.querySelector('.stage');
+function applyZoom() {
+  const s = zoomStage();
+  s.style.transform = `scale(${zoomLevel})`;
+  s.style.transformOrigin = 'top center';
+  $('zoom-pct').textContent = Math.round(zoomLevel * 100) + '%';
+}
+function zoomIn() { zoomLevel = Math.min(3.0, zoomLevel + 0.25); applyZoom(); }
+function zoomOut() { zoomLevel = Math.max(0.25, zoomLevel - 0.25); applyZoom(); }
+function zoomReset() { zoomLevel = 1.0; applyZoom(); }
+
+/* TOGGLE NOTES */
+let notesHidden = false;
+function toggleNotes() {
+  notesHidden = !notesHidden;
+  document.querySelectorAll('.stage-side').forEach(el => {
+    el.style.display = notesHidden ? 'none' : '';
+  });
+  const btn = document.getElementById('notes-toggle');
+  btn.classList.toggle('hidden-notes', notesHidden);
+  btn.textContent = notesHidden ? '📝' : '📝';
+  btn.title = notesHidden ? 'Show notes (H)' : 'Hide notes (H)';
+  showToast(notesHidden ? 'Notes hidden. Press H to show again.' : 'Notes visible.');
+}
+
+// Keyboard shortcuts: Cmd/Ctrl + + / - / 0, H for notes
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === '=') { e.preventDefault(); zoomIn(); }
+  if ((e.metaKey || e.ctrlKey) && e.key === '-') { e.preventDefault(); zoomOut(); }
+  if ((e.metaKey || e.ctrlKey) && e.key === '0') { e.preventDefault(); zoomReset(); }
+  if (e.key === 'h' && !e.metaKey && !e.ctrlKey) { e.preventDefault(); toggleNotes(); }
+});
+// Mouse wheel zoom
+document.addEventListener('wheel', (e) => {
+  if (e.metaKey || e.ctrlKey) {
+    e.preventDefault();
+    if (e.deltaY < 0) zoomIn(); else zoomOut();
+  }
+}, { passive: false });
+</script>
+</body>
+</html>

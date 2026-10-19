@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AiXplore Workstation</title>
+<style>
+:root {
+  --bg: #faf7f2; --surface: #fff; --surface-2: #f5f0e8;
+  --text: #2a2419; --text-2: #6b5f50; --text-3: #a39685; --text-4: #c4b8a8;
+  --accent: #d4582a; --accent-light: #fdf0e8;
+  --teal: #2e8b72; --teal-light: #e6f5f0;
+  --wechat: #07c160; --amber: #f0a030;
+  --border: #e8e0d4; --border-2: #f0ebe3;
+  --shadow-sm: 0 1px 4px rgba(42,36,25,.06);
+  --shadow-md: 0 4px 16px rgba(42,36,25,.08);
+  --shadow-lg: 0 12px 40px rgba(42,36,25,.15);
+  --r: 12px; --r-lg: 16px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system,'SF Pro Text','PingFang SC',sans-serif; background:var(--bg); color:var(--text); font-size:14px; line-height:1.5; min-height:100vh; overflow:auto; }
+
+/* ═══ ZOOM PANEL ═══ */
+.zoom-panel { position:fixed; top:68px; right:12px; z-index:400; display:flex; flex-direction:column; gap:4px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:6px; box-shadow:var(--shadow-md); }
+.zoom-btn { width:30px; height:30px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; cursor:pointer; border:none; background:var(--surface-2); color:var(--text); transition:all .15s; }
+.zoom-btn:hover { background:var(--accent); color:#fff; }
+.zoom-pct { text-align:center; font-size:10px; font-weight:700; color:var(--text-3); padding:2px 0; }
+
+/* ═══ TOPBAR ═══ */
+.topbar { position:sticky; top:0; z-index:200; height:56px; background:var(--surface); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 20px; gap:16px; }
+.tb-brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:16px; }
+.tb-logo { width:30px; height:30px; border-radius:8px; background:linear-gradient(135deg,var(--accent),#e8945a); display:flex; align-items:center; justify-content:center; font-size:15px; }
+.tb-brand span { color:var(--accent); }
+.tb-div { width:1px; height:24px; background:var(--border); }
+.tb-org { font-size:13px; color:var(--text-2); display:flex; align-items:center; gap:6px; }
+.tb-org .d { width:8px; height:8px; background:var(--teal); border-radius:50%; }
+.tb-right { margin-left:auto; display:flex; align-items:center; gap:10px; }
+.tb-pill { font-size:11px; font-weight:600; padding:4px 12px; border-radius:8px; background:var(--surface-2); color:var(--text-2); }
+.tb-bell { width:34px; height:34px; border-radius:8px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; font-size:14px; }
+.tb-bell .nd { position:absolute; top:3px; right:3px; width:8px; height:8px; background:var(--accent); border-radius:50%; border:2px solid var(--surface); }
+.tb-av { width:30px; height:30px; border-radius:50%; background:var(--teal-light); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:var(--teal); }
+
+/* ═══ LAYOUT ═══ */
+.layout { display:flex; min-height:calc(100vh - 56px); }
+.sidebar { width:200px; background:var(--surface); border-right:1px solid var(--border); padding:16px 10px; flex-shrink:0; }
+.sb-sec { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:var(--text-4); padding:10px 10px 4px; }
+.sb-item { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:8px; font-size:13px; color:var(--text-2); cursor:pointer; transition:all .15s; }
+.sb-item:hover { background:var(--surface-2); }
+.sb-item.active { background:var(--accent-light); color:var(--accent); font-weight:600; }
+.sb-item .badge { margin-left:auto; font-size:10px; font-weight:700; background:var(--accent); color:#fff; padding:1px 6px; border-radius:6px; }
+.sb-item .badge.g { background:var(--teal); }
+
+/* ═══ MAIN ═══ */
+.main { flex:1; padding:20px 24px; overflow-y:auto; }
+.pg { display:none; }
+.pg.active { display:block; }
+.pg-head { margin-bottom:20px; }
+.pg-title { font-size:18px; font-weight:700; }
+.pg-sub { font-size:12px; color:var(--text-3); margin-top:2px; }
+
+/* ═══ COMPONENTS ═══ */
+.card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg); padding:18px; margin-bottom:14px; box-shadow:var(--shadow-sm); }
+.card-h { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.card-h h3 { font-size:13px; font-weight:700; }
+.card-h .ch-r { display:flex; gap:8px; align-items:center; }
+
+.kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:16px; }
+.kpi { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:14px; box-shadow:var(--shadow-sm); cursor:pointer; transition:all .2s; }
+.kpi:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); border-color:var(--accent); }
+.kpi-l { font-size:10px; color:var(--text-3); font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
+.kpi-v { font-size:24px; font-weight:800; margin:3px 0; }
+.kpi-v.a { color:var(--accent); }
+.kpi-v.t { color:var(--teal); }
+.kpi-d { font-size:10px; color:var(--teal); font-weight:600; }
+
+.pill { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; }
+.pill.on { background:var(--teal-light); color:var(--teal); }
+.pill.new { background:var(--accent-light); color:var(--accent); }
+.pill.stk { background:#fef3cd; color:#856404; }
+.pill.off { background:var(--surface-2); color:var(--text-3); }
+.pill.lang { background:#f0e6ff; color:#6b3fbf; }
+
+.tbl { width:100%; border-collapse:collapse; font-size:12px; }
+.tbl th { text-align:left; font-size:10px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.5px; padding:7px 8px; border-bottom:2px solid var(--border); }
+.tbl td { padding:9px 8px; border-bottom:1px solid var(--border-2); vertical-align:middle; }
+.tbl tr { cursor:pointer; transition:background .15s; }
+.tbl tr:hover td { background:var(--surface-2); }
+.tbl tr.sel td { background:var(--accent-light); }
+
+.btn { padding:7px 14px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid var(--border); background:var(--surface); color:var(--text); transition:all .15s; display:inline-flex; align-items:center; gap:5px; }
+.btn:hover { border-color:var(--accent); color:var(--accent); }
+.btn.p { background:var(--accent); color:#fff; border-color:var(--accent); }
+.btn.p:hover { filter:brightness(1.1); color:#fff; }
+.btn.t { background:var(--teal); color:#fff; border-color:var(--teal); }
+.btn.t:hover { filter:brightness(1.1); color:#fff; }
+.btn.sm { padding:5px 10px; font-size:11px; }
+.btn.gh { background:transparent; border-color:transparent; }
+.btn.gh:hover { background:var(--surface-2); }
+
+/* Alerts */
+.al { display:flex; flex-direction:column; gap:8px; }
+.al-item { display:flex; align-items:flex-start; gap:10px; padding:10px 12px; background:var(--surface); border:1px solid var(--border); border-radius:10px; cursor:pointer; transition:all .2s; }
+.al-item:hover { box-shadow:var(--shadow-md); transform:translateX(2px); }
+.al-item.w { border-left:3px solid var(--accent); }
+.al-item.i { border-left:3px solid var(--teal); }
+.al-ic { font-size:15px; margin-top:1px; }
+.al-tx { flex:1; font-size:12px; }
+.al-tx strong { display:block; margin-bottom:1px; font-size:13px; }
+.al-tx .d { color:var(--text-3); font-size:11px; }
+
+/* ═══ SENIOR PROFILE (expandable) ═══ */
+.sen-detail { display:none; background:var(--surface-2); border-radius:var(--r); padding:16px; margin-top:8px; }
+.sen-detail.show { display:block; animation:slideUp .3s ease; }
+@keyframes slideUp { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+.sen-prof { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+.sen-prof-av { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,var(--teal),#6bc5a8); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; color:#fff; }
+.sen-prof-info { flex:1; }
+.sen-prof-name { font-size:15px; font-weight:700; }
+.sen-prof-meta { font-size:11px; color:var(--text-3); }
+.sen-prof-stats { display:flex; gap:14px; }
+.sen-ps { text-align:center; }
+.sen-ps .n { font-size:18px; font-weight:800; color:var(--teal); }
+.sen-ps .l { font-size:9px; color:var(--text-3); }
+
+/* Timeline */
+.tl { padding:6px 0; }
+.tl-item { display:flex; gap:10px; padding:8px 0; position:relative; }
+.tl-item::before { content:''; position:absolute; left:13px; top:28px; bottom:-8px; width:2px; background:var(--border); }
+.tl-item:last-child::before { display:none; }
+.tl-dot { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; flex-shrink:0; background:var(--surface); border:2px solid var(--border); }
+.tl-dot.done { background:var(--teal-light); border-color:var(--teal); }
+.tl-dot.cur { background:var(--accent-light); border-color:var(--accent); }
+.tl-c { flex:1; }
+.tl-t { font-size:12px; font-weight:600; }
+.tl-d { font-size:11px; color:var(--text-3); margin-top:1px; }
+.tl-time { font-size:10px; color:var(--text-4); margin-top:3px; }
+
+/* ═══ PHONE SIMULATOR ═══ */
+.phone-panel {
+  display: none;
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: 420px;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  z-index: 250;
+  flex-direction: column;
+}
+.phone-panel.show { display: flex; }
+.pp-header {
+  padding: 14px 18px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.pp-header h3 { font-size: 14px; font-weight: 700; }
+.pp-header .close { cursor: pointer; font-size: 18px; color: var(--text-3); width:28px; height:28px; display:flex; align-items:center; justify-content:center; border-radius:50%; }
+.pp-header .close:hover { background: var(--border); }
+.pp-controls {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 18px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+.pp-controls .step-label { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .5px; }
+.pp-controls .step-num { font-size: 11px; color: var(--text-3); }
+.pp-btns { display: flex; gap: 6px; margin-left: auto; }
+.pp-body { flex: 1; overflow-y: auto; padding: 16px; background: #f5f5f5; }
+.pp-msgs { display: flex; flex-direction: column; gap: 10px; }
+.pp-bub {
+  max-width: 82%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  animation: bubIn .35s ease;
+}
+@keyframes bubIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.pp-bub.them { align-self:flex-start; background:#fff; border:1px solid #e0e0e0; border-radius:2px 12px 12px 12px; }
+.pp-bub.me { align-self:flex-end; background:var(--wechat); color:#fff; border-radius:12px 2px 12px 12px; }
+.pp-bub .step-tag { font-size:9px; font-weight:800; letter-spacing:1px; color:var(--accent); text-transform:uppercase; margin-bottom:3px; }
+.pp-bub .time { font-size:9px; color:#bbb; margin-top:4px; text-align:right; }
+.pp-bub.them .time { text-align:left; }
+.pp-choices {
+  padding: 12px 16px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.pp-choice-btn {
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  transition: all .2s;
+  text-align: left;
+}
+.pp-choice-btn:hover { border-color: var(--wechat); background: #f0fff5; }
+.pp-choice-btn.voice { display:flex; align-items:center; gap:8px; }
+.pp-choice-btn.voice .vd { width:8px; height:8px; border-radius:50%; background:var(--amber); animation:vp 1.5s infinite; }
+@keyframes vp { 0%,100%{opacity:.3} 50%{opacity:1} }
+.pp-progress {
+  height:4px; background:var(--border);
+}
+.pp-progress-fill { height:100%; background:linear-gradient(90deg,var(--teal),var(--accent)); transition:width .4s; }
+
+/* Behind-the-scenes strip */
+.btss-strip {
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+  padding: 10px 16px;
+  font-size: 11px;
+  color: var(--text-2);
+  max-height: 120px;
+  overflow-y: auto;
+}
+.btss-strip .label { font-weight:700; color:var(--text-3); font-size:10px; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+.btss-row { display:flex; align-items:center; gap:6px; padding:3px 0; }
+.btss-row .dot { width:6px; height:6px; border-radius:50%; background:var(--teal); flex-shrink:0; }
+
+/* ═══ FEED CARDS ═══ */
+.feed-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.feed-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:14px; box-shadow:var(--shadow-sm); cursor:pointer; transition:all .2s; }
+.feed-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+.fc-h { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.fc-icon { width:32px; height:32px; border-radius:8px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; font-size:14px; }
+.fc-name { font-size:12px; font-weight:600; }
+.fc-type { font-size:10px; color:var(--text-3); }
+.fc-stats { display:flex; gap:12px; font-size:11px; color:var(--text-2); }
+.fc-stats strong { color:var(--text); }
+
+/* Forms */
+.fg { margin-bottom:12px; }
+.fl { font-size:11px; font-weight:600; color:var(--text-2); margin-bottom:3px; display:block; }
+.fi { width:100%; padding:9px 12px; border:1px solid var(--border); border-radius:8px; font-size:12px; background:var(--surface); font-family:inherit; }
+.fi:focus { outline:none; border-color:var(--teal); }
+.fr { display:flex; gap:10px; }
+.fr > * { flex:1; }
+
+/* Language bars */
+.lb { display:flex; flex-direction:column; gap:6px; }
+.lb-row { display:flex; align-items:center; gap:8px; font-size:11px; }
+.lb-label { width:56px; color:var(--text-2); }
+.lb-bar { flex:1; height:6px; background:var(--border); border-radius:3px; overflow:hidden; }
+.lb-fill { height:100%; border-radius:3px; transition:width .6s; }
+.lb-pct { width:32px; text-align:right; font-weight:600; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--text); color: #fff;
+  padding: 10px 20px; border-radius: 10px;
+  font-size: 13px; font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  z-index: 500;
+  opacity: 0;
+  transition: opacity .3s, transform .3s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+
+@media (max-width:900px) {
+  .sidebar { display:none; }
+  .kpi-grid { grid-template-columns:1fr 1fr; }
+  .phone-panel { width:100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tb-brand"><div class="tb-logo">🌿</div><div>Ai<span>Xplore</span></div></div>
+  <div class="tb-div"></div>
+  <div class="tb-org"><div class="d"></div>North York Public Library</div>
+  <div class="tb-right">
+    <div class="tb-pill">Pilot · 47 seniors</div>
+    <div class="tb-bell">🔔<div class="nd"></div></div>
+    <div class="tb-av">A</div>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sb-sec">Overview</div>
+    <div class="sb-item active" data-pg="dash"><span>📊</span>Dashboard</div>
+    <div class="sb-sec">Manage</div>
+    <div class="sb-item" data-pg="seniors"><span>👵</span>Seniors<span class="badge">47</span></div>
+    <div class="sb-item" data-pg="acts"><span>🌱</span>Activities</div>
+    <div class="sb-item" data-pg="log"><span>💬</span>Pulong Log</div>
+    <div class="sb-sec">Supply</div>
+    <div class="sb-item" data-pg="feed"><span>📡</span>Feed Sources</div>
+    <div class="sb-sec">Reports</div>
+    <div class="sb-item" data-pg="report"><span>📈</span>Weekly Report</div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main" id="mainArea">
+
+    <!-- DASHBOARD -->
+    <div class="pg active" id="pg-dash">
+      <div class="pg-head"><div class="pg-title">Dashboard</div><div class="pg-sub">Oct 13–19 · 47 active · 3 feed sources</div></div>
+      <div class="kpi-grid">
+        <div class="kpi" onclick="navTo('seniors')"><div class="kpi-l">触达 Seniors</div><div class="kpi-v">47</div><div class="kpi-d">↑ 12% vs 上周</div></div>
+        <div class="kpi" onclick="navTo('acts')"><div class="kpi-l">本周参加</div><div class="kpi-v t">32</div><div class="kpi-d">68% 转化率</div></div>
+        <div class="kpi" onclick="navTo('report')"><div class="kpi-l">去了 3+ 次</div><div class="kpi-v a">19</div><div class="kpi-d">40% 习惯建立</div></div>
+        <div class="kpi" onclick="navTo('log')"><div class="kpi-l">Pulong 消息</div><div class="kpi-v">128</div><div class="kpi-d" style="color:var(--text-3)">回复率 89%</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h3>需要关注</h3><button class="btn sm gh">全部</button></div>
+        <div class="al">
+          <div class="al-item w" onclick="navTo('seniors');setTimeout(()=>expandSenior('marisol'),300)">
+            <div class="al-ic">⚠️</div>
+            <div class="al-tx"><strong>Marisol · 72h 无互动</strong><div class="d">最后消息: "不去"。Pulong 已暂停。Sarah 已收到通知。→ 建议打电话</div></div>
+          </div>
+          <div class="al-item i" onclick="navTo('log')">
+            <div class="al-ic">📅</div>
+            <div class="al-tx"><strong>明天 7am 提醒 × 8 条</strong><div class="d">8 位 seniors 明天有活动。Pulong 自动发送。</div></div>
+          </div>
+          <div class="al-item i" onclick="openPhone('lola')">
+            <div class="al-ic">🎉</div>
+            <div class="al-tx"><strong>Lola 连续 3 周 · Garden Club</strong><div class="d">习惯建立 ✓ (75/100)。Pulong 已推荐 Pula 做陶器。</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h3>活动热度</h3><span class="pill on">本周</span></div>
+        <table class="tbl">
+          <tr><th>活动</th><th>地点</th><th>参加</th><th>Streak</th><th>语言</th><th></th></tr>
+          <tr onclick="navTo('acts')"><td><strong>Garden Club</strong></td><td>NYCC</td><td><strong>12</strong></td><td><span class="pill stk">3 周</span></td><td><span class="pill lang">Phi·Mnd</span></td><td><button class="btn sm gh" onclick="event.stopPropagation();openPhone('lola')">📱</button></td></tr>
+          <tr onclick="navTo('acts')"><td><strong>Filipino Cooking</strong></td><td>NY Lib</td><td><strong>8</strong></td><td><span class="pill on">新</span></td><td><span class="pill lang">Tag</span></td><td></td></tr>
+          <tr onclick="navTo('acts')"><td><strong>Tai Chi</strong></td><td>Laurier Pk</td><td><strong>6</strong></td><td><span class="pill on">2 周</span></td><td><span class="pill lang">Mnd</span></td><td></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- SENIORS -->
+    <div class="pg" id="pg-seniors">
+      <div class="pg-head"><div class="pg-title">Seniors</div><div class="pg-sub">47 active · 按 habit score</div></div>
+      <div class="card">
+        <div class="card-h">
+          <h3>列表</h3>
+          <div class="ch-r">
+            <input class="fi" style="width:140px" placeholder="搜索…" id="senSearch">
+            <button class="btn sm">全部</button>
+            <button class="btn sm t" onclick="openPhone('lola')">📱 Lola 的手机</button>
+          </div>
+        </div>
+        <table class="tbl" id="senTable">
+          <tr><th>Name</th><th>语言</th><th>区域</th><th>Streak</th><th>Habit</th><th></th></tr>
+          <tr class="sel" data-sen="lola" onclick="toggleSenior('lola')">
+            <td><strong>Lola</strong> <span style="color:var(--text-3);font-size:10px">(Maria)</span></td>
+            <td><span class="pill lang">Tagalog</span></td><td>Wilton</td>
+            <td><span class="pill stk">3周✓</span></td>
+            <td style="font-weight:700;color:var(--teal)">75</td>
+            <td><button class="btn sm gh" onclick="event.stopPropagation();openPhone('lola')">📱</button></td>
+          </tr>
+          <tr data-sen="marisol" onclick="toggleSenior('marisol')">
+            <td><strong>Marisol</strong></td>
+            <td><span class="pill lang">Tagalog</span></td><td>Sheppard</td>
+            <td><span class="pill off">暂停</span></td>
+            <td style="font-weight:700;color:var(--text-3)">20</td>
+            <td><button class="btn sm gh">查看</button></td>
+          </tr>
+          <tr data-sen="wang" onclick="toggleSenior('wang')">
+            <td><strong>Wang</strong> <span style="color:var(--text-3);font-size:10px">(张先生)</span></td>
+            <td><span class="pill lang">Mandarin</span></td><td>Bayview</td>
+            <td><span class="pill on">2周</span></td>
+            <td style="font-weight:700">50</td>
+            <td><button class="btn sm gh">查看</button></td>
+          </tr>
+          <tr data-sen="rosa" onclick="toggleSenior('rosa')">
+            <td><strong>Rosa</strong></td>
+            <td><span class="pill lang">Spanish</span></td><td>Don Mills</td>
+            <td><span class="pill on">1周</span></td>
+            <td style="font-weight:700">25</td>
+            <td><button class="btn sm gh">查看</button></td>
+          </tr>
+          <tr data-sen="chen" onclick="toggleSenior('chen')">
+            <td><strong>Chen</strong> <span style="color:var(--text-3);font-size:10px">(陈奶奶)</span></td>
+            <td><span class="pill lang">Mandarin</span></td><td>NY</td>
+            <td><span class="pill new">新</span></td>
+            <td style="font-weight:700;color:var(--text-3)">0</td>
+            <td><button class="btn sm gh">查看</button></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Expandable profiles -->
+      <div class="card sen-detail" id="detail-lola" style="border-color:var(--teal);border-width:2px">
+        <div class="sen-prof">
+          <div class="sen-prof-av">L</div>
+          <div class="sen-prof-info">
+            <div class="sen-prof-name">Lola <span style="font-size:12px;color:var(--text-3);font-weight:400">(Maria)</span></div>
+            <div class="sen-prof-meta">64 · Tagalog · 15 Wilton Ave · PGP 菲律宾 · 女儿: Sarah</div>
+          </div>
+          <div class="sen-prof-stats">
+            <div class="sen-ps"><div class="n">4</div><div class="l">参加</div></div>
+            <div class="sen-ps"><div class="n">3</div><div class="l">周streak</div></div>
+            <div class="sen-ps"><div class="n" style="color:var(--accent)">75</div><div class="l">habit</div></div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;margin-bottom:8px">Journey</div>
+        <div class="tl">
+          <div class="tl-item"><div class="tl-dot done">✓</div><div class="tl-c"><div class="tl-t">Setup (Sarah 在场)</div><div class="tl-d">Sarah 加了 Pulong。Lola 回 "好"。Sarah: "这是图书馆的"</div><div class="tl-time">Oct 13</div></div></div>
+          <div class="tl-item"><div class="tl-dot done">✓</div><div class="tl-c"><div class="tl-t">第 1 次 · Garden Club</div><div class="tl-d">Pulong 问 "怎么样" → "Maria 很好！" · 7am 提醒 + 25 路</div><div class="tl-time">Oct 15</div></div></div>
+          <div class="tl-item"><div class="tl-dot done">✓</div><div class="tl-c"><div class="tl-t">第 2 次 · Garden Club</div><div class="tl-d">自动排了。语音回 "好"。Maria 带了朋友 Ana</div><div class="tl-time">Oct 22</div></div></div>
+          <div class="tl-item"><div class="tl-dot cur">▶</div><div class="tl-c"><div class="tl-t">第 3 次 + Pula 推荐</div><div class="tl-d">Lola: "下周三我去"。Pula 是她第一次手工。Pulong 下周五问。</div><div class="tl-time">Oct 29</div></div></div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap">
+          <span class="pill on">户外</span><span class="pill on">社交</span><span class="pill on">不赶时间</span><span class="pill on">一个人OK</span><span class="pill lang">Tagalog</span><span class="pill new">Pula</span>
+        </div>
+        <div style="margin-top:12px"><button class="btn t sm" onclick="openPhone('lola')">📱 看她的手机 (Pulong 对话)</button></div>
+      </div>
+
+      <div class="card sen-detail" id="detail-marisol">
+        <div class="sen-prof">
+          <div class="sen-prof-av" style="background:linear-gradient(135deg,var(--accent-2),#90c9b8)">M</div>
+          <div class="sen-prof-info">
+            <div class="sen-prof-name">Marisol</div>
+            <div class="sen-prof-meta">58 · Tagalog · Sheppard Ave · PGP · 女儿: Anna</div>
+          </div>
+          <div class="sen-prof-stats">
+            <div class="sen-ps"><div class="n">1</div><div class="l">参加</div></div>
+            <div class="sen-ps"><div class="n" style="color:var(--text-3)">0</div><div class="l">streak</div></div>
+            <div class="sen-ps"><div class="n" style="color:var(--text-3)">20</div><div class="l">habit</div></div>
+          </div>
+        </div>
+        <div class="al" style="margin-top:8px">
+          <div class="al-item w"><div class="al-ic">⚠️</div><div class="al-tx"><strong>72h 无互动</strong><div class="d">最后: "不去" (上周二)。Pulong 暂停了。Anna 已通知。建议: 打电话。</div></div></div>
+        </div>
+      </div>
+
+      <div class="card sen-detail" id="detail-wang">
+        <div class="sen-prof">
+          <div class="sen-prof-av" style="background:linear-gradient(135deg,#7c6fc0,#a89ce0)">W</div>
+          <div class="sen-prof-info">
+            <div class="sen-prof-name">Wang (张先生)</div>
+            <div class="sen-prof-meta">71 · Mandarin · Bayview · Super Visa · 女儿: Lin</div>
+          </div>
+          <div class="sen-prof-stats">
+            <div class="sen-ps"><div class="n">3</div><div class="l">参加</div></div>
+            <div class="sen-ps"><div class="n">2</div><div class="l">周streak</div></div>
+            <div class="sen-ps"><div class="n">50</div><div class="l">habit</div></div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text-2);margin-top:8px">偏好: 太极 · 早间 · 户外 · 一个人。Pulong 已排 Tai Chi (Mon 7am)。</div>
+      </div>
+
+      <div class="card sen-detail" id="detail-rosa">
+        <div class="sen-prof">
+          <div class="sen-prof-av" style="background:linear-gradient(135deg,#e8945a,var(--accent))">R</div>
+          <div class="sen-prof-info">
+            <div class="sen-prof-name">Rosa</div>
+            <div class="sen-prof-meta">62 · Spanish · Don Mills · PGP Mexico · 儿子: Luis</div>
+          </div>
+          <div class="sen-prof-stats">
+            <div class="sen-ps"><div class="n">1</div><div class="l">参加</div></div>
+            <div class="sen-ps"><div class="n">1</div><div class="l">周</div></div>
+            <div class="sen-ps"><div class="n">25</div><div class="l">habit</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card sen-detail" id="detail-chen">
+        <div class="sen-prof">
+          <div class="sen-prof-av" style="background:linear-gradient(135deg,#90c9b8,var(--teal))">C</div>
+          <div class="sen-prof-info">
+            <div class="sen-prof-name">Chen (陈奶奶)</div>
+            <div class="sen-prof-meta">74 · Mandarin · North York · PGP 中国 · 儿子: David</div>
+          </div>
+          <div class="sen-prof-stats">
+            <div class="sen-ps"><div class="n">0</div><div class="l">参加</div></div>
+            <div class="sen-ps"><div class="n">0</div><div class="l">streak</div></div>
+            <div class="sen-ps"><div class="n" style="color:var(--text-3)">0</div><div class="l">habit</div></div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text-2);margin-top:8px">刚 setup (2天前)。Pulong 已发 DISCOVER。等回复。</div>
+      </div>
+    </div>
+
+    <!-- ACTIVITIES -->
+    <div class="pg" id="pg-acts">
+      <div class="pg-head"><div class="pg-title">Activities</div><div class="pg-sub">3 sources · 247 in North York</div></div>
+      <div class="card">
+        <div class="card-h"><h3>全部</h3><div class="ch-r"><button class="btn sm">🔍</button><button class="btn sm p" onclick="showToast('发布表单已展开')">+ 发布</button></div></div>
+        <table class="tbl">
+          <tr><th>名称</th><th>Source</th><th>时间</th><th>费用</th><th>Seniors</th><th>Status</th></tr>
+          <tr><td><strong>Garden Club</strong></td><td style="font-size:11px">NYPL</td><td>Wed 10:00</td><td>免费</td><td><strong>12</strong></td><td><span class="pill stk">3周</span></td></tr>
+          <tr><td><strong>Filipino Cooking</strong></td><td style="font-size:11px">NYPL</td><td>Fri 14:00</td><td>免费</td><td><strong>8</strong></td><td><span class="pill on">Active</span></td></tr>
+          <tr><td><strong>Pula / Pottery</strong></td><td style="font-size:11px">NYPL</td><td>Sat 11:00</td><td>免费</td><td><strong>5</strong></td><td><span class="pill new">新</span></td></tr>
+          <tr><td><strong>Tai Chi</strong></td><td style="font-size:11px">TLC</td><td>Mon 07:00</td><td>免费</td><td><strong>6</strong></td><td><span class="pill on">2周</span></td></tr>
+          <tr><td><strong>Walking Group</strong></td><td style="font-size:11px">CityCal</td><td>Daily 09:00</td><td>免费</td><td><strong>4</strong></td><td><span class="pill on">Active</span></td></tr>
+        </table>
+      </div>
+      <div class="card" id="publishForm">
+        <div class="card-h"><h3>发布新活动到 Pulong Feed</h3></div>
+        <div class="fr" style="margin-bottom:10px">
+          <div class="fg"><label class="fl">活动名称</label><input class="fi" placeholder="例如: Garden Club – Spring"></div>
+          <div class="fg"><label class="fl">地点</label><input class="fi" placeholder="NYCC 正门"></div>
+        </div>
+        <div class="fr" style="margin-bottom:10px">
+          <div class="fg"><label class="fl">时间</label><input class="fi" placeholder="每周三 10:00–11:30"></div>
+          <div class="fg"><label class="fl">费用</label><input class="fi" value="免费"></div>
+          <div class="fg"><label class="fl">报名</label><input class="fi" value="不需要"></div>
+        </div>
+        <div class="fg"><label class="fl">描述（英文 → Pulong 自动翻译成 3 种语言）</label><input class="fi" placeholder="Outdoor gardening. Bring a water bottle. No experience needed."></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn p" id="pubBtn" onclick="publishActivity()">发布到 Feed →</button>
+          <span style="font-size:11px;color:var(--text-3)">发布后 47 位 seniors 的下一次匹配将包含此活动</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PULONG LOG -->
+    <div class="pg" id="pg-log">
+      <div class="pg-head"><div class="pg-title">Pulong Log</div><div class="pg-sub">每条消息 + 回复 · 可筛选</div></div>
+      <div class="card">
+        <div class="card-h">
+          <h3>按 Senior 筛选</h3>
+          <div class="ch-r">
+            <button class="btn sm t" data-filter="lola" onclick="filterLog('lola')">Lola</button>
+            <button class="btn sm" data-filter="all">全部</button>
+          </div>
+        </div>
+        <div class="al" id="logList" style="max-height:400px;overflow-y:auto">
+          <!-- injected -->
+        </div>
+      </div>
+    </div>
+
+    <!-- FEED SOURCES -->
+    <div class="pg" id="pg-feed">
+      <div class="pg-head"><div class="pg-title">Feed Sources</div><div class="pg-sub">3 source · 247 活动</div></div>
+      <div class="feed-grid">
+        <div class="feed-card" onclick="showToast('NYPL: 128 活动 · 最后同步 2h 前')">
+          <div class="fc-h"><div class="fc-icon">📚</div><div><div class="fc-name">North York Public Library</div><div class="fc-type">RSS · 自动</div></div></div>
+          <div class="fc-stats"><span>活动: <strong>128</strong></span><span>新增: <strong>6</strong></span><span><strong>2h</strong></span></div>
+        </div>
+        <div class="feed-card" onclick="showToast('TCC: 84 活动 · 最后同步 1h 前')">
+          <div class="fc-h"><div class="fc-icon">🏛️</div><div><div class="fc-name">Toronto Community Centers</div><div class="fc-type">iCal · 自动</div></div></div>
+          <div class="fc-stats"><span>活动: <strong>84</strong></span><span>新增: <strong>3</strong></span><span><strong>1h</strong></span></div>
+        </div>
+        <div class="feed-card" onclick="showToast('⚠️ TLC: 3 天未更新 · 5 个过期已过滤')">
+          <div class="fc-h"><div class="fc-icon">🤝</div><div><div class="fc-name">TLC Community (NGO)</div><div class="fc-type">CSV · 手动</div></div></div>
+          <div class="fc-stats"><span>活动: <strong>35</strong></span><span>⚠️ <strong>3天</strong></span></div>
+        </div>
+        <div class="feed-card" style="border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="showToast('添加新 source: 选择 RSS / iCal / CSV / API')">
+          <div style="text-align:center"><div style="font-size:20px;margin-bottom:4px">+</div><div style="font-size:12px;font-weight:600">添加 Source</div><div style="font-size:10px;color:var(--text-3)">RSS / iCal / CSV / API</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORT -->
+    <div class="pg" id="pg-report">
+      <div class="pg-head"><div class="pg-title">Weekly Report</div><div class="pg-sub">给 Director 看的</div></div>
+      <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kpi"><div class="kpi-l">触达</div><div class="kpi-v">47</div><div class="kpi-d">新增 5</div></div>
+        <div class="kpi"><div class="kpi-l">参加</div><div class="kpi-v t">32</div><div class="kpi-d">68%</div></div>
+        <div class="kpi"><div class="kpi-l">3+ 次</div><div class="kpi-v a">19</div><div class="kpi-d">↑ 上周 14</div></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h3>语言分布</h3></div>
+        <div class="lb">
+          <div class="lb-row"><div class="lb-label">Mandarin</div><div class="lb-bar"><div class="lb-fill" style="width:45%;background:var(--teal)"></div></div><div class="lb-pct">45%</div></div>
+          <div class="lb-row"><div class="lb-label">Tagalog</div><div class="lb-bar"><div class="lb-fill" style="width:30%;background:var(--accent)"></div></div><div class="lb-pct">30%</div></div>
+          <div class="lb-row"><div class="lb-label">Spanish</div><div class="lb-bar"><div class="lb-fill" style="width:25%;background:#7c6fc0"></div></div><div class="lb-pct">25%</div></div>
+        </div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--accent)">
+        <div style="font-size:13px;line-height:1.8;color:var(--text-2)">
+          <strong style="color:var(--text)">📊 给 Director:</strong> 你的 <strong style="color:var(--accent)">Garden Club</strong> 被 <strong>12 位新移民 senior</strong> 连续 3 周参加。这是他们<strong>第一次独立参加社区活动</strong>。这些是你目前触达不到的 PGP 群体。
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h3>行动建议</h3></div>
+        <div class="al">
+          <div class="al-item i"><div class="al-ic">💡</div><div class="al-tx"><strong>Garden Club 满 12 人</strong><div class="d">建议加 "Spring 2" (周三 2pm)</div></div></div>
+          <div class="al-item i"><div class="al-ic">💡</div><div class="al-tx"><strong>Tai Chi 6 人连续 2 周</strong><div class="d">Pulong 下次会问 "要不要加喝茶环节"</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PHONE PANEL (right slide-in) ═══ -->
+<div class="phone-panel" id="phonePanel">
+  <div class="pp-header">
+    <div>
+      <h3 id="ppTitle">Lola · Pulong 对话</h3>
+      <div style="font-size:11px;color:var(--text-3)" id="ppSub">WeChat · Tagalog · 64 岁</div>
+    </div>
+    <div class="close" onclick="closePhone()">✕</div>
+  </div>
+  <div class="pp-controls">
+    <div class="step-label" id="ppStepLabel">DISCOVER</div>
+    <div class="step-num" id="ppStepNum">1/5</div>
+    <div class="pp-btns">
+      <button class="btn sm t" id="ppPlayBtn" onclick="toggleAutoPlay()">▶ Play</button>
+      <button class="btn sm gh" onclick="resetPhone()">↺ Reset</button>
+    </div>
+  </div>
+  <div class="pp-progress"><div class="pp-progress-fill" id="ppProgress" style="width:0%"></div></div>
+  <div class="pp-body">
+    <div class="pp-msgs" id="ppMsgs"></div>
+  </div>
+  <div class="btss-strip" id="btssStrip">
+    <div class="label">Behind the Scenes</div>
+    <div id="btssContent"><div style="color:var(--text-3);font-size:11px">点 "下一步" 或选一个回复，看 AI 背后做了什么</div></div>
+  </div>
+  <div class="pp-choices" id="ppChoices"></div>
+</div>
+
+<!-- TOAST -->
+<div class="zoom-panel">
+  <button class="zoom-btn" onclick="zoomIn()" title="Zoom in">+</button>
+  <div class="zoom-pct" id="zoom-pct">100%</div>
+  <button class="zoom-btn" onclick="zoomOut()" title="Zoom out">−</button>
+  <button class="zoom-btn" onclick="zoomReset()" title="Reset" style="font-size:11px">⟳</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══ NAV ═══
+function navTo(pg) {
+  document.querySelectorAll('.sb-item').forEach(s => s.classList.remove('active'));
+  document.querySelector(`.sb-item[data-pg="${pg}"]`)?.classList.add('active');
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('active'));
+  document.getElementById('pg-' + pg).classList.add('active');
+}
+document.querySelectorAll('.sb-item').forEach(item => {
+  item.addEventListener('click', () => navTo(item.dataset.pg));
+});
+
+// ═══ SENIOR EXPAND ═══
+function toggleSenior(id) {
+  const d = document.getElementById('detail-' + id);
+  if (d) d.classList.toggle('show');
+}
+function expandSenior(id) {
+  const d = document.getElementById('detail-' + id);
+  if (d) d.classList.add('show');
+}
+
+// ═══ SEARCH ═══
+document.getElementById('senSearch')?.addEventListener('input', function() {
+  const q = this.value.toLowerCase();
+  document.querySelectorAll('#senTable tr[data-sen]').forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+
+// ═══ PUBLISH ═══
+function publishActivity() {
+  const btn = document.getElementById('pubBtn');
+  btn.textContent = '✓ 已发布';
+  btn.disabled = true;
+  btn.style.opacity = '.5';
+  showToast('活动已发布到 Pulong Feed · 47 位 seniors 的下一次匹配将包含此活动');
+}
+
+// ═══ PULONG LOG ═══
+const logData = [
+  {sen:'lola',from:'p',step:'DISCOVER',text:'Hi Lola, 我是 NY 图书馆社区助手。Sarah 刚帮我加的。周三有种花小组，免费，很多人一个人去。要看看吗？',time:'Oct 13 10:34'},
+  {sen:'lola',from:'s',text:'好',time:'Oct 13 10:35'},
+  {sen:'lola',from:'p',step:'UNDERSTAND',text:'Garden Club，周三 10 点，NYCC 正门。不用报名，带水壶。25 路公交 3 站。',time:'Oct 13 10:35'},
+  {sen:'lola',from:'s',text:'嗯，好的。谢谢。',time:'Oct 13 10:36'},
+  {sen:'lola',from:'p',step:'ATTEND',text:'Lola，明天 10 点 Garden Club。Wilton Ave 上 25 路 3 站。Maria 上次说 group 很好。',time:'Oct 14 07:00'},
+  {sen:'lola',from:'s',voice:true,text:'🎤 好 0:08',time:'Oct 14 07:02'},
+  {sen:'lola',from:'p',step:'RETURN',text:'今天怎么样？Maria 还在吗？下周三还来吗？',time:'Oct 15 12:30'},
+  {sen:'lola',from:'s',text:'Maria 很好！下周三我去。',time:'Oct 15 12:45'},
+  {sen:'chen',from:'p',step:'DISCOVER',text:'Hi 陈奶奶，我是 NY 图书馆社区助手。David（你儿子）帮我加的。你家附近周一早上有太极拳，免费的。要看看吗？',time:'Oct 16 09:00'},
+];
+function renderLog(filter='lola') {
+  const el = document.getElementById('logList');
+  el.innerHTML = '';
+  logData.filter(m => filter === 'all' || m.sen === filter).forEach(m => {
+    const isP = m.from === 'p';
+    const av = document.createElement('div');
+    av.style.cssText = `width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;background:${isP?'var(--teal-light)':'var(--accent-light)'};color:${isP?'var(--teal)':'var(--accent)'}`;
+    av.textContent = isP ? 'P' : (m.sen === 'lola' ? 'L' : 'C');
+    const bub = document.createElement('div');
+    bub.style.cssText = `flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:12px`;
+    let h = '';
+    if (m.step) h += `<div style="font-size:8px;font-weight:800;letter-spacing:1px;color:var(--accent);margin-bottom:2px">${m.step}</div>`;
+    h += m.text;
+    h += `<div style="font-size:9px;color:var(--text-4);margin-top:3px">${m.time} · ${m.sen}</div>`;
+    bub.innerHTML = h;
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:8px;margin-bottom:8px;align-items:flex-start';
+    row.appendChild(av); row.appendChild(bub);
+    el.appendChild(row);
+  });
+}
+function filterLog(sen) {
+  renderLog(sen);
+  document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('t'));
+  document.querySelector(`[data-filter="${sen}"]`)?.classList.add('t');
+}
+renderLog('lola');
+
+// ═══ PHONE SIMULATOR ═══
+const phoneSteps = [
+  { step:'DISCOVER', msg:{from:'them',step:'DISCOVER',text:'<strong>Hi Lola,</strong> 我是 North York 图书馆的社区助手。Sarah（你女儿）刚刚帮我加的。<br><br>你附近周三有个种花小组，<strong>免费的</strong>，很多人一个人去。要看看吗？',time:'10:34'},
+    choices:[{text:'好',next:1},{text:'不要',next:1},{text:'🎤 语音 "好"',voice:true,next:1}],
+    btss:['Feed: 247 个活动 in North York','匹配: 距离<1km + 户外 + 免费 + 无需报名','翻译: EN→Tagalog · 口语 · 14字','提到 Sarah + NY Library (双信任锚)']
+  },
+  { step:'UNDERSTAND', msg:{from:'them',step:'UNDERSTAND',text:'Garden Club，<strong>周三 10 点</strong>，North York Community Centre 正门。<br>不用报名，带个水壶就行。<br>25 路公交从 Wilton Ave 上，<strong>3 站</strong>到门口。',time:'10:35'},
+    choices:[{text:'嗯，好的。谢谢。',next:2},{text:'怎么坐公交？',next:2}],
+    btss:['从活动原始数据提取: 时间/地点/费用/交通','TTC API: Wilton Ave → 25路 → 3站 → NYCC','社交证明: "很多人一个人去" (23/30 solo)']
+  },
+  { step:'ATTEND', msg:{from:'them',step:'ATTEND · 明天 7am',text:'<strong>Lola，明天 10 点 Garden Club。</strong><br>Wilton Ave 上 25 路，3 站到。<br><span style="font-size:11px;opacity:.7">Maria 上次说 group 很好，不用怕一个人去。</span><br><div style="font-size:10px;color:#aaa;margin-top:4px">By NYPL · 跟 Sarah 说停就停</div>',time:'Tue 7:00'},
+    choices:[{text:'好，我记了。',next:3},{text:'🎤 语音 "好"',voice:true,next:3},{text:'不行，我那天有事',next:3}],
+    btss:['提醒链: 7am + 9:30am + 活动前 30min','交通: 25路 实时位置已查','社交锚: Maria = 上周参加同活动的 senior','如果 9:30 没回 → 10:00 通知 Sarah']
+  },
+  { step:'RETURN', msg:{from:'them',step:'RETURN · 参加后 2h',text:'<strong>今天怎么样？</strong>Maria 还在吗？<br>下周三还来吗？',time:'Wed 12:30'},
+    choices:[{text:'Maria 很好！下周三我去。',next:4},{text:'还行，下次不一定',next:4},{text:'不去了，太累了',next:4}],
+    btss:['Lola 回 "Maria 很好" → 记录偏好: 社交','"下周三我去" → 自动排 10/29 Garden Club','Habit score: 25 → 50','通知 Sarah: "Mama 参加了 ✓ · Maria 很好 · 下周三去"']
+  },
+  { step:'COMPLETE', msg:{from:'them',step:'',text:'好，我帮你记了。下周三 7am 再提醒你。🌿<br><div style="font-size:11px;opacity:.7;margin-top:6px">下周五我会问你 Pula (做陶器)，Maria 说她朋友也去了。</div>',time:'Wed 12:45'},
+    choices:[{text:'好的，谢谢！',next:0},{text:'Pula 是什么？',next:0}],
+    btss:['Habit score: 50/100 · 连续 2 次','下次推荐: Pula (下周五) · 基于 "喜欢手工" 信号','Sarah 收到周汇总: 本周 1 参加 + 1 确认','Feed 状态: Garden Club 12人 · 满 → 建议加时段']
+  }
+];
+
+let phoneIdx = 0;
+let autoPlay = false;
+let autoTimer = null;
+
+function openPhone(senior) {
+  document.getElementById('phonePanel').classList.add('show');
+  document.getElementById('ppTitle').textContent = senior === 'lola' ? 'Lola · Pulong 对话' : senior + ' · Pulong 对话';
+  document.getElementById('ppSub').textContent = 'WeChat · Tagalog · 64 岁 · Habit 75/100';
+  resetPhone();
+}
+function closePhone() {
+  document.getElementById('phonePanel').classList.remove('show');
+  stopAutoPlay();
+}
+function resetPhone() {
+  phoneIdx = 0;
+  stopAutoPlay();
+  renderPhoneStep();
+}
+
+function renderPhoneStep() {
+  const msgs = document.getElementById('ppMsgs');
+  msgs.innerHTML = '';
+  // Show all messages up to current step
+  for (let i = 0; i <= phoneIdx; i++) {
+    const s = phoneSteps[i];
+    if (i < phoneIdx || true) {
+      // Add Pulong message
+      addBubble(s.msg.from, s.msg.text, s.msg.step, s.msg.time);
+      // If not last, add the chosen response
+      if (i < phoneSteps.length - 1) {
+        const chosen = phoneSteps[i].choices[0]; // auto-pick first for replay
+        addBubble('me', chosen.text, '', chosen.time || '');
+      }
+    }
+  }
+  // Current step: show Pulong's latest + choices
+  const cur = phoneSteps[phoneIdx];
+  // Update UI
+  document.getElementById('ppStepLabel').textContent = cur.step;
+  document.getElementById('ppStepNum').textContent = (phoneIdx+1) + '/5';
+  document.getElementById('ppProgress').style.width = ((phoneIdx+1)/5*100) + '%';
+  // Behind the scenes
+  const btss = document.getElementById('btssContent');
+  btss.innerHTML = cur.btss.map(b => `<div class="btss-row"><div class="dot"></div>${b}</div>`).join('');
+  // Choices
+  const ch = document.getElementById('ppChoices');
+  ch.innerHTML = '';
+  if (phoneIdx < phoneSteps.length - 1) {
+    cur.choices.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'pp-choice-btn' + (c.voice ? ' voice' : '');
+      btn.innerHTML = c.voice ? `<div class="vd"></div>${c.text}` : c.text;
+      btn.onclick = () => advancePhone();
+      ch.appendChild(btn);
+    });
+  } else {
+    ch.innerHTML = '<div style="font-size:11px;color:var(--text-3);text-align:center;padding:8px">完整 loop 走完 ✓ · 点 "↺ Reset" 重来</div>';
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addBubble(from, text, step, time) {
+  const el = document.getElementById('ppMsgs');
+  const div = document.createElement('div');
+  div.className = `pp-bub ${from}`;
+  let h = '';
+  if (step) h += `<div class="step-tag">${step}</div>`;
+  h += text;
+  if (time) h += `<div class="time">${time}</div>`;
+  div.innerHTML = h;
+  el.appendChild(div);
+}
+
+function advancePhone() {
+  if (phoneIdx < phoneSteps.length - 1) phoneIdx++;
+  renderPhoneStep();
+}
+
+function toggleAutoPlay() {
+  if (autoPlay) { stopAutoPlay(); return; }
+  autoPlay = true;
+  document.getElementById('ppPlayBtn').textContent = '⏸ Stop';
+  document.getElementById('ppPlayBtn').classList.remove('t');
+  autoTimer = setInterval(() => {
+    if (phoneIdx >= phoneSteps.length - 1) { stopAutoPlay(); return; }
+    phoneIdx++;
+    renderPhoneStep();
+  }, 2000);
+}
+function stopAutoPlay() {
+  autoPlay = false;
+  clearInterval(autoTimer);
+  document.getElementById('ppPlayBtn').textContent = '▶ Play';
+  document.getElementById('ppPlayBtn').classList.add('t');
+}
+
+// ═══ TOAST ═══
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ═══ ZOOM ═══
+let zoomLevel = 1.0;
+function applyZoom() {
+  const layout = document.querySelector('.layout');
+  layout.style.transform = `scale(${zoomLevel})`;
+  layout.style.transformOrigin = 'top left';
+  document.getElementById('zoom-pct').textContent = Math.round(zoomLevel * 100) + '%';
+}
+function zoomIn() { zoomLevel = Math.min(3.0, zoomLevel + 0.25); applyZoom(); }
+function zoomOut() { zoomLevel = Math.max(0.25, zoomLevel - 0.25); applyZoom(); }
+function zoomReset() { zoomLevel = 1.0; applyZoom(); }
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === '=') { e.preventDefault(); zoomIn(); }
+  if ((e.metaKey || e.ctrlKey) && e.key === '-') { e.preventDefault(); zoomOut(); }
+  if ((e.metaKey || e.ctrlKey) && e.key === '0') { e.preventDefault(); zoomReset(); }
+});
+document.addEventListener('wheel', (e) => {
+  if (e.metaKey || e.ctrlKey) {
+    e.preventDefault();
+    if (e.deltaY < 0) zoomIn(); else zoomOut();
+  }
+}, { passive: false });
+</script>
+</body>
+</html>
